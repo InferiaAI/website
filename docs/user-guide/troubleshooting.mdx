@@ -1,0 +1,47 @@
+---
+title: "Troubleshooting"
+description: "Solutions to common problems"
+---
+
+## Installation & Startup
+
+### `ModuleNotFoundError: No module named 'inferia'`
+**Cause**: The package is not installed in your current environment.
+**Fix**:
+```bash
+pip install -e .
+```
+Or ensure you are running commands with the correct `python` executable or Docker container.
+
+### `Database connection failed`
+**Cause**: PostgreSQL is not running or credentials in `.env` are incorrect.
+**Fix**:
+1. Check if Postgres is up: `docker ps` or `pg_isready`.
+2. Verify `POSTGRES_DSN` in `.env`.
+3. Ensure the database user/password matches what you set up.
+
+### `Redis Connection Error`
+**Cause**: Redis is not reachable.
+**Fix**: Ensure Redis is running on port 6379 (default).
+```bash
+redis-cli ping
+# Should return PONG
+```
+
+## Runtime Issues
+
+### `401 Unauthorized` on Internal Endpoints
+**Cause**: Missing or mismatched `INTERNAL_API_KEY`.
+**Fix**: Ensure all services (Gateways, Workers) share the exact same `INTERNAL_API_KEY` in their `.env` file.
+
+### Models Stuck in "Pending"
+**Cause**: No compute nodes are available to take the job.
+**Fix**:
+1. Check the **Dashboard** > **Compute Pools**.
+2. Ensure you have active workers (or Nosana nodes) registered.
+3. Check `orchestrator.log` for adapter errors.
+
+### "Model not found"
+**Cause**: The deployment name requested does not match any active deployment.
+**Fix**:
+- Verify the `model` parameter in your API call matches the **Deployment Name** (e.g., `llama-3-8b`), not just the base model name.

@@ -1,0 +1,56 @@
+---
+title: "Configuration"
+description: "Reference guide for all environment variables"
+---
+
+Inferia LLM uses a central `.env` file to configure all services. Below is a comprehensive list of available configuration options.
+
+## Core Configuration
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| **`ENVIRONMENT`** | Runtime environment (`development`, `production`). | `development` | Yes |
+| **`LOG_LEVEL`** | Logging verbosity (`DEBUG`, `INFO`, `WARNING`). | `INFO` | No |
+| **`INTERNAL_API_KEY`** | Shared secret for inter-service communication. | *None* | **Yes** |
+| **`ALLOWED_ORIGINS`** | CORS allowed origins (comma-separated). | `*` | No |
+
+## Databases
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| **`POSTGRES_DSN`** | PostgreSQL connection string. | `postgresql://inferia:inferia@localhost:5432/inferia` | **Yes** |
+| **`REDIS_URL`** | Redis connection string. | `redis://localhost:6379/0` | **Yes** |
+
+## Auth & Security
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| **`INTERNAL_API_KEY`** | Shared secret for inter-service communication. | *None* | **Yes** |
+| **`JWT_SECRET_KEY`** | Secret for signing auth tokens. | *None* | **Yes** |
+| **`SUPERADMIN_EMAIL`** | Email for the default admin account. | `admin@example.com` | **Yes** |
+| **`SUPERADMIN_PASSWORD`** | Password for default admin. | `admin123` | **Yes** |
+
+## External Providers
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| **`OPENAI_API_KEY`** | Key for OpenAI (if using fallback). | *None* | No |
+| **`HUGGING_FACE_TOKEN`** | Token for downloading private models. | *None* | No |
+| **`NOSANA_API_KEY`** | API Key for Nosana DePIN interactions. | *None* | No |
+
+## Guardrails (Filtration)
+
+| Variable | Description | Default | Required |
+| :--- | :--- | :--- | :--- |
+| **`GUARDRAIL_LAKERA_API_KEY`** | API Key for Lakera Prompt Injection. | *None* | No |
+| **`GUARDRAIL_GROQ_API_KEY`** | API Key for Llama Guard via Groq. | *None* | No |
+| **`PII_REDACTION_ENABLED`** | Enable local Presidio PII removal. | `true` | No |
+
+## Service Ports
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| **`INFERENCE_PORT`** | Port for Inference Gateway. | `8001` |
+| **`FILTRATION_PORT`** | Port for Filtration Gateway. | `8000` |
+| **`ORCHESTRATION_PORT`** | Port for Orchestration Gateway. | `8080` |
+| **`ORCHESTRATION_GRPC_PORT`** | Port for Orchestration gRPC. | `50051` |

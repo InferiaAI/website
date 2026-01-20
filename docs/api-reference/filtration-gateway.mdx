@@ -1,0 +1,55 @@
+---
+title: "Filtration Gateway"
+description: "Security and Context Resolution Endpoints"
+---
+
+The Filtration Gateway is the security control plane. While mostly used internally by the Inference Gateway, it exposes endpoints for context resolution and prompt processing.
+
+## Context Resolution
+
+### `POST /internal/context/resolve`
+Resolves an API key and model name into a fully configured inference context (deployment details, guardrails, RAG config).
+
+<ParamField body="api_key" type="string" required>
+  The API key used for the request.
+</ParamField>
+
+<ParamField body="model" type="string" required>
+  The requested model alias (e.g., `gpt-4`).
+</ParamField>
+
+**Response:**
+```json
+{
+  "valid": true,
+  "deployment": {
+    "id": "uuid",
+    "endpoint": "http://worker:8000"
+  },
+  "guardrail_config": { ... },
+  "rag_config": { ... }
+}
+```
+
+## Prompt Processing
+
+> [!NOTE]
+> These endpoints are primarily for internal service communication.
+
+### `POST /internal/prompt/process`
+Applies prompt templates and retrieves RAG context before inference.
+
+<ParamField body="messages" type="array" required>
+  Original list of messages.
+</ParamField>
+
+<ParamField body="template_id" type="string">
+  (Optional) Specific template ID to apply.
+</ParamField>
+
+<ParamField body="rag_config" type="object">
+  Configuration for RAG retrieval during this turn.
+</ParamField>
+
+**Response:**
+Returns a modified list of messages including `system` prompts and injected context.

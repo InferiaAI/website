@@ -1,0 +1,53 @@
+---
+title: 'RBAC & Security'
+description: 'Manage access control, roles, and security policies'
+icon: 'lock'
+---
+
+InferiaLLM employs a robust **Role-Based Access Control (RBAC)** system to ensure that users only have access to the resources they are authorized to use. This system covers authentication, authorization, and organization-level security.
+
+## Authentication
+
+InferiaLLM uses standard **JWT (JSON Web Tokens)** for stateless authentication.
+
+### Login Flow
+1.  User submits credentials (username/password) to `/auth/login`.
+2.  If **Two-Factor Authentication (2FA)** is enabled, the user must also provide a TOTP code.
+3.  The server returns an `access_token` (short-lived) and a `refresh_token` (long-lived).
+4.  The client includes the `access_token` in the `Authorization: Bearer <token>` header for all subsequent requests.
+
+### Two-Factor Authentication (TOTP)
+For enhanced security, users can enable TOTP (Time-based One-Time Password) using apps like Google Authenticator or Authy.
+- **Setup**: Users are shown a QR code to scan.
+- **Enforcement**: Administrators can enforce 2FA for all organization members.
+
+## Authorization (RBAC)
+
+Permissions in InferiaLLM are granular but grouped into **Roles** for easier management.
+
+### Roles
+- **Owner**: Full access to the organization, including billing and destructive actions.
+- **Admin**: Can manage users, deployments, and policies but cannot delete the organization.
+- **Member**: Can view resources and use inference endpoints.
+- **Viewer**: Read-only access.
+
+### Permissions Reference
+
+The system enforces permissions at the API level. Below is a reference of key permissions:
+
+| Category | Permission | Description |
+| :--- | :--- | :--- |
+| **Deployments** | `deployment:create` | Launch new model deployments. |
+| | `deployment:delete` | Terminate running deployments. |
+| **API Keys** | `api_key:create` | Generate new API keys for inference. |
+| | `api_key:revoke` | Revoke existing API keys. |
+| **Members** | `member:invite` | Invite new users to the organization. |
+| | `member:delete` | Remove users from the organization. |
+| **Knowledge Base** | `knowledge_base:add_data` | Upload documents to collections. |
+| **Audit Logs** | `audit_log:view` | View security and usage logs. |
+
+## Network Security
+
+- **Internal Gateway**: Services communicate via a secured internal gateway that validates service-to-service tokens.
+- **Isolation**: Each organization's resources (deployments, documents) are logically isolated.
+- **Secrets Management**: Sensitive values (like cloud provider keys) are encrypted at rest.

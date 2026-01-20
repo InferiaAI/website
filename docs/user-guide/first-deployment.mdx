@@ -1,0 +1,100 @@
+---
+title: 'First Deployment'
+description: 'Step-by-step guide to deploying your first LLM'
+icon: 'rocket'
+---
+
+This guide will walk you through provisioning compute, deploying a model, and running your first inference request using InferiaLLM.
+
+## Prerequisites
+
+- You have running InferiaLLM services (`inferia api-start`).
+- You have access to the Admin Dashboard (default: `http://localhost:3001`).
+- You have the necessary provider credentials configured (e.g., Nosana wallet).
+
+## Step 1: Provision Compute (Pools)
+
+Before deploying a model, you need a compute resource. In InferiaLLM, these are managed in **Pools**.
+
+1.  Navigate to the **Pools** section in the Dashboard sidebar.
+2.  Click **Create New Pool**.
+3.  **Select Provider**: Choose a provider (e.g., **Nosana**).
+4.  **Configuration**:
+    - Select the desired GPU type (e.g., NVIDIA A10G, A100).
+    - Set the quantity/size of the pool.
+5.  Click **Provision**.
+    - The system will request resources from the provider. Wait for the status to change to `Active`.
+
+## Step 2: Create a Deployment
+
+Once you have active compute, you can deploy a model onto it.
+
+1.  Navigate to the **Deployments** section.
+2.  Click **New Deployment**.
+3.  **Select Job Type**: Choose **Inference**.
+4.  **Select Engine**: Choose an optimization engine (e.g., **vLLM** for high-throughput serving).
+5.  **Configure Model**:
+    - **Deployment Name**: Enter a unique name (e.g., `my-first-llama`).
+      > **Important**: This name will be used as the `model` parameter in your API calls.
+    - **Source**: Specify the model weights (e.g., HuggingFace ID `meta-llama/Llama-2-7b-chat-hf`).
+6.  **Select Pool**: Assign the deployment to the pool you created in Step 1.
+7.  Click **Deploy**.
+    - The system will pull the model and start the inference server. Wait for the status to be `RUNNING`.
+
+## Step 3: Generate an API Key
+
+To access your deployment securely, you need an API Key.
+
+1.  Navigate to **API Keys** in the settings or sidebar.
+2.  Click **Create New Key**.
+3.  Give it a name (e.g., "Development Key").
+4.  Copy the generated key (e.g., `sk-inf-...`). You won't be able to see it again.
+
+## Step 4: Run Inference
+
+Now you can send requests to the Inference Gateway using your new deployment.
+
+**Endpoint**: `http://localhost:8001/v1/chat/completions`
+
+### Example Request (cURL)
+
+Replace `$API_KEY` with your key and use the **Deployment Name** you set in Step 2.
+
+```bash
+curl http://localhost:8001/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -d '{
+    "model": "my-first-llama",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello! Tell me a fun fact about space."
+      }
+    ],
+    "temperature": 0.7
+  }'
+```
+
+### Response
+
+You should receive a JSON response with the model's generated text:
+
+```json
+{
+  "id": "chatcmpl-...",
+  "object": "chat.completion",
+  "created": 1678900000,
+  "model": "my-first-llama",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Did you know that a day on Venus is longer than a year on Venus? ..."
+      },
+      "finish_reason": "stop"
+    }
+  ]
+}
+```

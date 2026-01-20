@@ -1,0 +1,29 @@
+---
+title: 'Organization Management'
+description: 'Manage teams, workspaces, and memberships'
+icon: 'building'
+---
+
+InferiaLLM uses an **Organization** structure to manage users, resources (pools, deployments), and policies within your instance.
+
+## Managing Members
+
+### Inviting Users
+You can invite new members via email.
+
+1.  Go to **Settings > Members**.
+2.  Click **Invite Member**.
+3.  Enter their email address.
+4.  Select a **Role** (e.g., Member, Admin).
+5.  Click **Send Invite**.
+
+The user will receive an email with a unique link to join the organization. If the SMTP service is not configured, you can copy the invite link manually from the pending invitations list.
+
+### Revoking Access
+To remove a user:
+1.  Go to **Settings > Members**.
+2.  Find the user in the list.
+3.  Click the **Remove** icon.
+4.  Confirm the action.
+
+The user's API keys associated with this organization will explicitly remain valid until manually revoked, but they will lose access to organization resources immediately.

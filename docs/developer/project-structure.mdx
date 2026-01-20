@@ -1,0 +1,37 @@
+---
+title: "Project Structure"
+description: "Overview of the Inferia LLM codebase and monorepo layout"
+---
+
+Inferia LLM follows a structured monorepo pattern to separate executable applications from reusable core libraries.
+
+## Top-Level Directories
+
+| Directory | Description |
+| :--- | :--- |
+| **`apps/`** | Deployment entry points (Gateways, Dashboard, Docs). |
+| **`package/`** | The public Python package (`inferia`) containing all core logic and services. |
+| **`deploy/`** | Infrastructure-as-Code (Docker Compose, Kubernetes manifests). |
+
+## 1. Apps (`apps/`)
+
+These are the runnable services that get deployed.
+
+-   **`inference-gateway/`**: Entry point for API requests.
+-   **`filtration-gateway/`**: Entry point for safety guardrails.
+-   **`orchestration-gateway/`**: Entry point for orchestration.
+-   **`docs/`**: This documentation site (built with Mintlify).
+-   **`dashboard/`**: React/Next.js frontend for the management console.
+
+## 2. Package (`package/`)
+
+This directory contains the source code for the `inferia` package. **All core logic lives here.**
+
+-   **`src/inferia/services/`**: Core business logic (inference, filtration, orchestration).
+-   **`src/inferia/cli.py`**: The `inferia` command-line interface entry point.
+-   **`src/inferia/gateways/`**: Gateway implementation details.
+
+## 3. Deploy (`deploy/`)
+
+-   **`.env`**: Centralized environment configuration.
+-   **`docker-compose.yml`**: Definition for running the entire stack locally.

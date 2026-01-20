@@ -1,0 +1,57 @@
+---
+title: "Contributing"
+description: "Guidelines for developing and contributing to Inferia LLM"
+---
+
+We welcome contributions! This guide will help you set up your development environment and understand our workflows.
+
+## Development Workflow
+
+1.  **Fork and Clone**: Start by forking the repository and cloning it locally.
+2.  **Install Dependencies**: Install the development dependencies for the `inferia` package.
+    ```bash
+    pip install -e ".[dev]"
+    ```
+3.  **Create a Branch**: Always work on a feature branch (`feat/new-adapter`, `fix/login-bug`).
+
+## Code Style
+
+We enforce code quality using standard Python tooling.
+
+-   **Formatter**: We use `black` for code formatting.
+    ```bash
+    black .
+    ```
+-   **Linter**: We use `ruff` (or `flake8`) for linting.
+-   **Type Checking**: Type hints are strongly encouraged.
+
+## Running Tests
+
+We use `pytest` for our test suite.
+
+```bash
+# Run all tests
+pytest
+
+# Run tests with coverage
+pytest --cov=inferia
+```
+
+## Syncing Code
+
+The project uses a monorepo structure where the source of truth is the `services/` directory. If you modify code in `services/`, you must sync it to the `package/` directory before building or testing the package.
+
+**Use the helper script:**
+
+```bash
+./sync_package.sh
+```
+
+This ensures that `package/src/inferia/services/` matches `services/`.
+
+## Pull Requests
+
+1.  Push your branch to your fork.
+2.  Open a Pull Request against the `main` branch.
+3.  Ensure all CI checks pass (linting, tests).
+4.  Provide a clear description of your changes.

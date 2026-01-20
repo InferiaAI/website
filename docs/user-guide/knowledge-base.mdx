@@ -1,0 +1,78 @@
+---
+title: 'Knowledge Base'
+description: 'Upload and manage documents for Retrieval Augmented Generation (RAG)'
+icon: 'book'
+---
+
+The Knowledge Base in InferiaLLM allows you to upload external documents that your LLM applications can reference. This enables **Retrieval Augmented Generation (RAG)**, where the model retrieves relevant context from your private data to answer queries more accurately.
+
+## Concepts
+
+### Collections
+A **Collection** is a logical grouping of documents. You can think of it as a folder or a dataset. When you query the Knowledge Base, you typically target a specific collection to narrow down the search context.
+
+### Documents
+**Documents** are the individual files or text chunks you upload to a collection. InferiaLLM automatically parses, chunks, and embeds these documents for efficient retrieval.
+
+## Supported File Types
+The system supports ingesting text from various file formats, including:
+- Plain Text (`.txt`)
+- Markdown (`.md`)
+- CSV (`.csv`)
+- PDF (`.pdf`) (if configured)
+- Microsoft Office formats (if configured)
+
+## Managing Knowledge
+
+### Uploading Documents via API
+
+You can upload documents programmatically using the API. Ensure your user context has the `KB_ADD_DATA` permission.
+
+```bash
+curl -X POST "http://localhost:8002/knowledge/data/upload" \
+  -H "Authorization: Bearer $JWT_TOKEN" \
+  -F "file=@./my-document.txt" \
+  -F "collection_name=product-manuals"
+```
+
+**Parameters:**
+- `file`: The binary file to upload.
+- `collection_name`: The target collection (e.g., "finance", "hr", "engineering").
+
+### Listing Collections
+
+To see all available collections in your organization:
+
+```bash
+curl -X GET "http://localhost:8002/knowledge/data/collections" \
+  -H "Authorization: Bearer $JWT_TOKEN"
+```
+
+### Listing Files in a Collection
+
+To view all files within a specific collection:
+
+```bash
+curl -X GET "http://localhost:8002/knowledge/data/collections/product-manuals/files" \
+  -H "Authorization: Bearer $JWT_TOKEN"
+```
+
+## Permissions
+
+Access to the Knowledge Base is governed by RBAC policies.
+
+| Permission | Description |
+| :--- | :--- |
+| `KB_LIST` | Allows listing collections and files. |
+| `KB_ADD_DATA` | Allows uploading new documents to collections. |
+| `KB_DELETE_DATA` | Allows removing documents from collections. |
+
+## Using RAG in Inference
+
+Once documents are uploaded, you can instruct the Orchestration Gateway to use a specific collection during inference. This is typically handled via prompt templates or configured directly in the deployment settings.
+
+When a request is made:
+1.  The query is embedded.
+2.  Relevant chunks are retrieved from the vector database (e.g., ChromaDB).
+3.  The chunks are injected into the prompt context.
+4.  The LLM generates a response based on the retrieved knowledge.

@@ -1,0 +1,48 @@
+---
+title: "Python SDK"
+description: "Official Python client for Inferia LLM"
+---
+
+## Installation
+
+```bash
+pip install inferia
+```
+
+
+
+## CLI Reference
+
+The `inferia` package comes with a built-in CLI for managing the entire platform.
+
+```bash
+usage: inferia [-h] {init,filtration-gateway,inference-gateway,orchestration-gateway,api-start} ...
+```
+
+### Commands
+
+#### `inferia init`
+Initializes the database schema.
+- **Usage**: `inferia init`
+- **Requires**: valid `POSTGRES_DSN` in `.env`.
+
+#### `inferia api-start`
+Starts the full stack (Inference, Filtration, Orchestrator + Worker) in a single process.
+- **Usage**: `inferia api-start`
+- **Options**:
+  - `--host`: Bind host (default: `0.0.0.0`)
+  - `--port`: Bind port (default: `8000`)
+  - `--workers`: Number of worker processes.
+
+#### `inferia inference-gateway`
+Starts only the Inference Gateway.
+- **Port**: Defaults to `8001`.
+
+#### `inferia filtration-gateway`
+Starts only the Filtration Gateway.
+- **Port**: Defaults to `8000`.
+
+#### `inferia orchestration-gateway`
+Starts only the Orchestration Gateway (Control Plane).
+- **Port**: Defaults to `8080`.
+

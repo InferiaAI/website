@@ -1,0 +1,80 @@
+---
+title: "Quickstart"
+description: "Get up and running with Inferia LLM"
+---
+
+You can run Inferia LLM using our Python package (recommended) or via Docker.
+
+## 1. Using Python Package
+
+The easiest way to get started is by installing the `inferia` package.
+
+### Prerequisites
+*   Python 3.10+
+*   PostgreSQL
+*   Redis
+
+### Installation
+
+1.  **Installation**:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install inferiallm
+    ```
+
+2.  **Configuration**:
+    Inferia relies on environment variables for configuration. Download the sample file to get started:
+    
+    ```bash
+    curl -o .env https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample
+    ```
+    
+    Edit the `.env` file to set your database credentials and API keys. The sample file contains defaults for local development.
+    
+    **Critical Variables:**
+    *   `POSTGRES_DSN`: Connection string for PostgreSQL.
+    *   `REDIS_URL`: Connection string for Redis (Critical for quotas).
+    *   `INTERNAL_API_KEY`: Secret key for inter-service security.
+    *   `GUARDRAIL_GROQ_API_KEY`: Required if using Llama Guard.
+
+3.  **Initialize the Database**:
+    This will create the necessary tables and users in your local PostgreSQL instance based on your `.env` configuration.
+
+    ```bash
+    inferia init
+    ```
+
+4.  **Start Services**:
+    Run all gateways, orchestration, and the dashboard in a single command.
+    
+    ```bash
+    inferia api-start
+    ```
+
+    **Access the Dashboard:**
+    Open [http://localhost:3001](http://localhost:3001) in your browser.
+
+## 2. Using Docker Compose
+
+If you prefer containerization, use the `deploy` directory.
+
+### Prerequisites
+*   Docker & Docker Compose
+
+### Steps
+
+1.  **Configure Environment**:
+    ```bash
+    cd deploy
+    cp .env.sample .env
+    # Edit .env with your keys
+    ```
+
+2.  **Start Services**:
+    ```bash
+    docker-compose up -d
+    ```
+
+3.  **Access Dashboard**:
+    Open [http://localhost:3001](http://localhost:3001).

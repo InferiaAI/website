@@ -1,0 +1,64 @@
+---
+title: "Extending Orchestration"
+description: "How to add new compute provider adapters"
+---
+
+The Orchestration Gateway uses an **Adapter Pattern** to support diverse compute providers (e.g., Kubernetes, SkyPilot, DePIN). This guide explains how to implement a new adapter.
+
+## The ProviderAdapter Interface
+
+All adapters must implement the `ProviderAdapter` abstract base class located in `services/orchestration/app/services/adapter_engine/adapters/base/adapter.py`.
+
+```python
+```python
+class ProviderAdapter(ABC):
+    @abstractmethod
+    async def discover_nodes(self) -> List[Dict]:
+        """Discover nodes that belong to this provider."""
+        pass
+
+    @abstractmethod
+    async def get_node_metadata(self, node_id: str) -> Dict:
+        """Provider-specific metadata (region, instance type)."""
+        pass
+
+    @abstractmethod
+    async def reconcile(self) -> None:
+        """Periodic reconciliation loop (add missing nodes, mark terminated)."""
+        pass
+```
+
+## Step-by-Step Implementation
+
+### 1. Create Adapter Module
+Create a new directory in `app/services/adapter_engine/adapters/<provider_name>/`.
+
+### 2. Implement Logic
+Your implementation should handle the specific API calls to the provider's SDK (e.g., AWS Boto3, K8s Client).
+
+```python
+from ..provider_adapter import ProviderAdapter
+
+class MyCloudAdapter(ProviderAdapter):
+    async def provision_node(self, pool_id: str, config: dict) -> str:
+        # Call Cloud API to launch instance
+        instance_id = cloud_client.run_instance(...)
+        return instance_id
+```
+
+### 3. Register Adapter
+Add your new adapter to the registry in `services/orchestration/app/services/adapter_engine/registry.py`.
+
+```python
+ADAPTER_REGISTRY = {
+    "kubernetes": KubernetesAdapter,
+    "skypilot": SkyPilotAdapter,
+    "mycloud": MyCloudAdapter,  # Add this
+}
+```
+
+## DePIN Integration (Nosana, Akash)
+
+For DePIN integrations, we use a **Sidecar** approach.
+- The adapter communicates with a local Node.js sidecar (consolidated in `depin-sidecar`) via HTTP.
+- The sidecar handles blockchain transactions and IPFS uploads.

@@ -1,0 +1,39 @@
+---
+title: "Key Features"
+description: "Explore the capabilities of the Inferia LLM platform"
+---
+
+Inferia LLM provides a comprehensive suite of tools for managing, securing, and scaling LLM inference.
+
+## 1. Unified Inference API
+
+Inferia abstracts away the complexity of managing multiple models and providers behind a single, standardized interface.
+
+-   **OpenAI Compatibility**: Drop-in replacement for OpenAI's API. simply change the `base_url` in your existing SDKs.
+-   **Multi-Model Support**: Run Llama 3, Mistral, Gemma, and other open-source models seamlessly.
+-   **Streaming**: Full support for Server-Sent Events (SSE) token streaming.
+
+## 2. Advanced Orchestration
+
+The **Orchestration Gateway** intelligently manages your compute resources.
+
+-   **Dynamic Provisioning**: Automatically spin up worker nodes on Kubernetes, SkyPilot, or DePIN networks (like Nosana) based on demand.
+-   **Load Balancing**: Distribute traffic across healthy nodes with automatic health checks.
+-   **Adapter System**: Extensible architecture allows you to plug in any compute provider (AWS, GCP, Azure, On-prem).
+
+## 3. Robust Security (Filtration)
+
+Security is built-in, not bolted on. The **Filtration Gateway** acts as a firewall for your LLMs.
+
+-   **PII Redaction**: Automatically detect and redact sensitive data (emails, phones, etc.) *before* it leaves your infrastructure.
+-   **Toxicity Detection**: Block harmful or offensive content in both inputs and outputs using Llama Guard.
+-   **Prompt Injection Defense**: Protect against jailbreaking attempts using Lakera or heuristic scanners.
+-   **Audit Logging**: Every request and response is logged asynchronously for compliance and debugging.
+
+## 4. Observability & Control
+
+Gain full visibility into your inference operations.
+
+-   **Centralized Dashboard**: Monitor request rates, latency, and error rates in real-time.
+-   **API Key Management**: Granular control over access with role-based permissions.
+-   **Usage Analytics**: Track token usage and costs per organization or project.

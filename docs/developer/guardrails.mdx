@@ -1,0 +1,104 @@
+---
+title: "Guardrails Configuration"
+description: "Configuring safety checks and filtration policies"
+---
+
+The Filtration Gateway enforces safety policies through a pipeline of guardrails. These checks happen before the prompt reaches the LLM (Input Guardrails) and after the LLM generates a response (Output Guardrails).
+
+## Available Guardrails
+
+### 1. PII Redaction
+Automatically detects and sanitizes Personally Identifiable Information (PII) such as emails, phone numbers, and addresses.
+- **Provider**: Microsoft Presidio (Local)
+- **Config**: Enabled by default.
+
+### 2. Prompt Injection (Lakera)
+Detects attempts to bypass system instructions or "jailbreak" the model.
+- **Provider**: Lakera Guard
+- **Env Variable**: `GUARDRAIL_LAKERA_API_KEY`
+
+### 3. Toxicity (Llama Guard)
+Evaluates content for hate speech, harassment, and explicit material.
+- **Provider**: Llama Guard (via Groq)
+- **Env Variable**: `GUARDRAIL_GROQ_API_KEY`
+
+## Performance Optimization
+
+The Filtration Gateway utilizes **Parallel Execution** to minimize latency.
+- **Concurrent Scanning**: PII redaction and Input Guardrails (e.g., Prompt Injection) run in parallel using `asyncio.gather`.
+- **Latency Impact**: This reduces the overhead of safety checks by approximately 40%, ensuring that robust security doesn't compromise user experience.
+
+## Configuration
+
+Guardrails are configured via the policy engine. A typical policy definition looks like this:
+
+```json
+{
+  "policy_id": "strict_safety",
+  "input_guardrails": ["pii", "jailbreak", "toxicity"],
+  "output_guardrails": ["toxicity"],
+  "threshold": 0.8
+}
+```
+
+Policies can be assigned per-API key in the **Dashboard**.
+
+## Adding Custom Guardrails
+
+To add a custom guardrail, you must implement the `GuardrailProvider` interface and register it with the engine.
+
+### 1. Create the Provider
+
+Create a new file in `services/filtration/guardrail/providers/` (e.g., `regex_provider.py`).
+
+```python
+from typing import Dict, Any
+from ..models import GuardrailResult, Violation
+from .base import GuardrailProvider
+
+class RegexProvider(GuardrailProvider):
+    @property
+    def name(self) -> str:
+        return "regex-guard"
+
+    async def scan_input(
+        self, 
+        text: str, 
+        user_id: str, 
+        config: Dict[str, Any], 
+        metadata: Dict[str, Any] = None
+    ) -> GuardrailResult:
+        # Example: Block specific pattern
+        if "forbidden_param" in text:
+            return GuardrailResult(
+                is_valid=False,
+                violations=[Violation(type="custom", score=1.0, message="Forbidden pattern detected")]
+            )
+        return GuardrailResult(is_valid=True, sanitized_text=text)
+
+    async def scan_output(
+        self, 
+        text: str, 
+        output: str, 
+        user_id: str, 
+        config: Dict[str, Any], 
+        metadata: Dict[str, Any] = None
+    ) -> GuardrailResult:
+        return GuardrailResult(is_valid=True, sanitized_text=output)
+```
+
+### 2. Register the Provider
+
+Update `services/filtration/guardrail/engine.py` to initialize your new provider.
+
+```python
+from .providers.regex_provider import RegexProvider
+
+class GuardrailEngine:
+    def _load_providers(self):
+        # ... existing providers ...
+        
+        # Register new provider
+        regex = RegexProvider()
+        self.providers[regex.name] = regex
+```

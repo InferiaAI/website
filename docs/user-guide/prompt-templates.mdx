@@ -1,0 +1,55 @@
+---
+title: 'Prompt Templates'
+description: 'Manage and version dynamic prompts for your applications'
+icon: 'code'
+---
+
+InferiaLLM includes a powerful prompt management system that allows you to decouple prompt engineering from application code. You can create, version, and manage templates that accept dynamic variables at runtime.
+
+## Overview
+
+Instead of hardcoding prompt strings in your application, you store them as **Prompt Templates**. The Inference Gateway renders these templates with the data provided in the API request before sending them to the LLM.
+
+## Templating Syntax
+
+InferiaLLM uses **Jinja2** for templating, giving you full control over logic, loops, and formatting within your prompts.
+
+### Example Template
+```handlebars
+You are a helpful customer support agent for {{ company_name }}.
+
+Context references:
+{% for doc in context %}
+- {{ doc }}
+{% endfor %}
+
+User Query: {{ user_query }}
+
+Please answer the user's query using the provided context.
+```
+
+### Dynamic Variables
+In the example above:
+- `{{ company_name }}`: A simple string variable.
+- `{{ context }}`: A list variable that is iterated over.
+- `{{ user_query }}`: The specific question from the user.
+
+## Managing Templates
+
+Templates are managed via the API or Dashboard. Each template can have multiple versions, allowing you to iterate on prompts safely without breaking existing integrations.
+
+### Structure
+A prompt template object typically consists of:
+- **ID**: Unique identifier (e.g., `customer-support-agent`).
+- **Version**: Version tag (e.g., `v1.0.0`, `prod`).
+- **Template**: The raw Jinja2 string.
+- **Input Variables**: A list of expected variables (metadata).
+
+## Usage in Inference
+
+To use a stored template, you reference it by ID when making a request to the `chat/completions` endpoint (if using the advanced payload format) or via the SDK methods designed for templated execution.
+
+By centralizing prompts, you can:
+1.  **Iterate Faster**: Tweaking a prompt doesn't require a code deploy.
+2.  **Collaborate**: Non-technical team members can refine prompts in the dashboard.
+3.  **Version Control**: Roll back to previous effective prompts instantly.

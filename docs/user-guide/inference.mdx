@@ -1,0 +1,66 @@
+---
+title: "Running Inference"
+description: "How to use Inferia with the OpenAI SDK"
+---
+
+Inferia provides an OpenAI-compatible API, allowing you to use existing tools and libraries with minimal configuration.
+
+## Prerequisites
+
+1.  **Inferia Stack Running**: Ensure the [Inference Gateway](/user-guide/installation) is up (default port: `8001`).
+2.  **API Key**: Generate an API Key from the **Inferia Dashboard**.
+3.  **Deployment Name**: You need the name of the model deployment you created (e.g., `llama-3-8b`).
+
+> [!NOTE]
+> **Automatic RAG & Templating**
+> Prompt templates and RAG configurations are linked to the **Deployment** in the dashboard. You do **not** need to pass extra parameters in your API call; the backend automatically applies the correct template and context based on the model name.
+
+## Using the OpenAI Python SDK
+
+Install the official OpenAI library:
+
+```bash
+pip install openai
+```
+
+Configure the client to point to your Inferia instance:
+
+```python
+from openai import OpenAI
+
+# 1. Point to Inferia Gateway (Port 8001)
+# 2. Use your generated API Key
+client = OpenAI(
+    base_url="http://localhost:8001/v1",
+    api_key="sk-inferia-..." 
+)
+
+response = client.chat.completions.create(
+    model="llama-3-8b",  # Use your specific Deployment Name here
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain quantum computing in one sentence."}
+    ],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+```
+
+## Using cURL
+
+You can also test endpoints directly from the terminal:
+
+```bash
+curl -X POST http://localhost:8001/v1/chat/completions \
+  -H "Authorization: Bearer sk-inferia-..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama-3-8b",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'
+```

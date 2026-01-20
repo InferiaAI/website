@@ -1,0 +1,65 @@
+---
+title: 'Guardrails'
+description: 'Enforce safety, security, and compliance policies'
+icon: 'shield-check'
+---
+
+InferiaLLM's Guardrail component ensures that both inputs (user prompts) and outputs (LLM responses) comply with your organization's safety and security policies. It uses a pluggable architecture to support multiple safety engines.
+
+## Why use Guardrails?
+- **Prevent Toxic Content**: Filter out hate speech, violence, and sexual content.
+- **Protect Sensitive Data**: Detect and redact PII (Personally Identifiable Information).
+- **Security**: Block prompt injection attacks and jailbreak attempts.
+- **Compliance**: Ensure interactions meet regulatory standards.
+
+## Supported Providers
+
+InferiaLLM supports different providers that you can configure based on your needs for privacy, speed, and accuracy.
+
+### 1. LLM Guard (Local)
+- **Best for**: Privacy-first environments, air-gapped deployments.
+- **Description**: Runs safety models locally within the container. No data leaves your infrastructure.
+- **Features**: Scans for toxicity, secrets, code safety, and more.
+- **Configuration**: Default provider.
+
+### 2. Llama Guard (Groq)
+- **Best for**: High-speed, chat-optimized applications.
+- **Description**: Uses Meta's Llama Guard model tailored for conversation safety, hosted on Groq for ultra-low latency.
+- **Configuration**: Requires `GUARDRAIL_GROQ_API_KEY`.
+
+### 3. Lakera Guard (API)
+- **Best for**: Security-critical applications (Prompt Injection defense).
+- **Description**: Integrates with Lakera AI's API, specializing in detecting sophisticated jailbreaks and injection attacks.
+- **Configuration**: Requires `GUARDRAIL_LAKERA_API_KEY`.
+
+## PII Detection & Redaction
+
+The PII service operates independently of the safety scanners. It scans every request for sensitive information.
+
+- **Detection**: Identifies Emails, Phone Numbers, Credit Cards, SSNs, IP Addresses, etc.
+- **Redaction**: Automatically replaces detected entities with placeholders (e.g., `<EMAIL_ADDRESS>`) before the prompt reaches the LLM.
+- **Privacy**: Ensures the LLM provider never sees your users' private data.
+
+## Configuration
+
+Guardrails are configured via environment variables in your `.env` file.
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `GUARDRAIL_ENABLE_GUARDRAILS` | Master switch to enable/disable all guardrails. | `true` |
+| `GUARDRAIL_DEFAULT_GUARDRAIL_ENGINE` | Selects the active provider (`llm-guard`, `llama-guard`, `lakera`). | `llm-guard` |
+| `GUARDRAIL_PII_DETECTION_ENABLED` | Enable or disable PII scanning. | `true` |
+| `GUARDRAIL_GROQ_API_KEY` | API Key for using Llama Guard via Groq. | - |
+| `GUARDRAIL_LAKERA_API_KEY` | API Key for using Lakera Guard. | - |
+
+## Enabling Specific Scanners
+
+You can fine-tune which scanners are active to balance latency and safety.
+
+Example `.env` flags:
+```bash
+GUARDRAIL_ENABLE_TOXICITY=true
+GUARDRAIL_ENABLE_PROMPT_INJECTION=true
+GUARDRAIL_ENABLE_SECRETS=true
+GUARDRAIL_ENABLE_PII=true
+```

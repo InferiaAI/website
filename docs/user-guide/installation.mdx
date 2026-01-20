@@ -1,0 +1,127 @@
+---
+title: "Installation"
+description: "Comprehensive installation guide for Inferia LLM"
+---
+
+This guide provides detailed instructions for installing and configuring Inferia LLM. Depending on your use case, you can choose between installing the **Python Package** (recommended for general usage) or setting up **Individual Services** manually (recommended for contributors).
+
+## System Requirements
+
+Before you begin, ensure your environment meets the following prerequisites:
+
+| Component | Requirement | Description |
+| :--- | :--- | :--- |
+| **OS** | Linux / macOS | Windows is supported via WSL2. |
+| **Python** | 3.10+ | Core runtime for all services. |
+| **Node.js** | 18+ | Required for the Orchestration Sidecar (Nosana). |
+| **PostgreSQL** | 14+ | Primary database for application state. |
+| **Redis** | 6+ | Message broker for task queues. |
+
+## 1. Environment Configuration
+
+Regardless of your installation method, you need to configure the core environment variables.
+
+1.  **Clone the Repository** (Required for configuration files):
+    ```bash
+    git clone https://github.com/inferiallm/inferiallm.git
+    cd inferiallm
+    ```
+
+2.  **Initialize Configuration**:
+    Copy the sample environment file. This file acts as the single source of truth for all services.
+    ```bash
+    cp .env.sample .env
+    ```
+
+3.  **Edit `.env`**:
+    Update the file with your specific credentials.
+    > [!IMPORTANT]
+    > You must set `POSTGRES_DSN`, `REDIS_URL`, and `INTERNAL_API_KEY` for the system to function.
+
+## 2. Option A: Python Package (Recommended)
+
+The easiest way to install and manage Inferia is via the official Python package.
+
+### Standard Installation
+Installs the latest stable version from PyPI.
+
+```bash
+pip install inferiallm
+```
+
+### Developer Installation
+If you are developing the package itself or need the latest source changes:
+
+```bash
+# Editable install for active development
+cd package
+pip install -e .
+
+# OR: Build and install a wheel
+pip install build
+python -m build
+pip install dist/inferia-*.whl
+```
+
+### Database Initialization
+Once the package is installed, initialize the database schema. This command uses your `.env` configuration.
+
+```bash
+inferia init
+```
+
+## 3. Option B: Run Services Individually (CLI)
+
+If you prefer to run services individually for debugging, use the `inferia` CLI commands.
+
+> [!TIP]
+> Ensure you have activated your virtual environment.
+
+### Inference Gateway
+The entry point for API requests.
+
+```bash
+inferia inference-gateway
+```
+
+### Filtration Gateway
+The security layer for content safety and policy enforcement.
+
+```bash
+inferia filtration-gateway
+# Note: Ensure internal API keys match in .env
+```
+
+### Orchestration Gateway
+The control plane for managing compute pools and deployments.
+
+```bash
+inferia orchestration-gateway
+```
+
+### Dashboard
+Runs the management UI on port 3001.
+
+> Note: The dashboard is part of the `inferia api-start` command, but purely static files can be served via standard tools if needed. For development, use `api-start`.
+
+## 4. Option C: Docker Compose (Full Stack)
+
+For a complete, containerized deployment including the Dashboard, use Docker Compose.
+
+### Steps
+
+1.  **Configure Environment**:
+    ```bash
+    cd deploy
+    cp .env.sample .env
+    ```
+
+2.  **Start Services**:
+    ```bash
+    docker-compose up -d
+    ```
+
+3.  **Access Services**:
+    - **Dashboard**: http://localhost:3001
+    - **Orchestrator**: http://localhost:8080
+    - **Filtration**: http://localhost:8000

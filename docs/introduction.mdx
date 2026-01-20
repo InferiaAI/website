@@ -1,0 +1,57 @@
+---
+title: Introduction
+description: "Welcome to the Inferia LLM documentation"
+---
+
+
+## What is Inferia LLM?
+
+**Inferia LLM** is a comprehensive orchestration platform designed to manage the lifecycle of Large Language Model (LLM) inference. It bridges the gap between raw compute providers (Cloud, On-Prem, DePIN) and end-user applications.
+
+At its core, Inferia provides a unified API to access models running across a distributed network of compute nodes, ensuring high availability, security, and performance.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Unified Interface"
+    icon="code"
+  >
+    OpenAI-compatible endpoints for seamless integration with existing tools and libraries.
+  </Card>
+  <Card
+    title="Security First"
+    icon="shield-check"
+  >
+    Built-in **Filtration Gateway** provides PII redaction, prompt injection protection, and content safety scanning.
+  </Card>
+  <Card
+    title="Orchestration"
+    icon="network-wired"
+  >
+    Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana).
+  </Card>
+  <Card
+    title="Observability"
+    icon="chart-line"
+  >
+    Comprehensive logging and metrics via the Dashboard for full visibility into usage and performance.
+  </Card>
+</CardGroup>
+
+## System Components
+
+Inferia consists of three main modular gateways:
+
+1.  **[Inference Gateway](/api-reference/inference-gateway)**: The high-performance entry point for API requests.
+2.  **[Filtration Gateway](/api-reference/filtration-gateway)**: The security engine responsible for guardrails and policy enforcement.
+3.  **[Orchestration Gateway](/api-reference/orchestration-gateway)**: The control plane that manages compute resources and model deployments.
+
+## Getting Started
+
+Ready to dive in?
+
+-   **[Quickstart](/quickstart)**: Run the full stack locally with Docker.
+-   **[Installation](/user-guide/installation)**: Manual setup guide for individual services.
+-   **[Architecture](/developer/architecture)**: Deep dive into the system design.
+
