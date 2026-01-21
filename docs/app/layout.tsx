@@ -7,6 +7,10 @@ const inter = Inter({
   variable: '--font-inter', // Define variable for Tailwind
 });
 
+export const metadata = {
+  metadataBase: new URL('https://inferia.ai'),
+};
+
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>

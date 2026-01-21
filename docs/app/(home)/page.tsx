@@ -2,6 +2,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ShieldCheck, Zap, Network } from 'lucide-react';
 
+export const metadata = {
+  title: 'Inferia LLM - The Operating System for LLMs in Production',
+  description: 'Bridge the gap between raw compute and applications. Unified API, built-in guardrails, and intelligent routing for distributed inference.',
+};
+
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center text-center">

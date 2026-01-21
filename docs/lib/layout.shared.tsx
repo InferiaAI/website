@@ -5,14 +5,19 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: (
-        <Image 
-          src="/logo.svg" 
-          alt="InferiaLLM" 
-          width={100} 
-          height={53}
-          style={{ width: '100px', height: 'auto' }}
-          priority
-        />
+        <div className="flex items-center gap-2">
+          <Image 
+            src="/logo.svg" 
+            alt="InferiaLLM" 
+            width={35} 
+            height={35}
+            style={{ width: '35px', height: 'auto' }}
+            priority
+          />
+          <span className="font-bold text-xl tracking-tighter">
+            InferiaLLM
+          </span>
+        </div>
       ),
     },
     githubUrl: 'https://github.com/InferiaAI/website',
