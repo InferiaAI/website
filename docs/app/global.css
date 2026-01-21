@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+@theme {
+  --font-sans: var(--font-inter);
+}
+
+:root {
+  /* Inferia Green: #0D9373 -> HSL 166 84% 31% */
+  /* We use a slightly lighter version for better visibility on light mode if needed, 
+     but let's stick to the brand color for the main primary. */
+  --primary: 166 84% 31%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Lighter green for backgrounds or accents */
+  --ring: 166 84% 31%;
+}
+
+.dark {
+  /* For dark mode, the same green works well, or we can brighten it slightly for contrast */
+  --primary: 166 84% 31%; 
+  --primary-foreground: 0 0% 100%;
+  
+  /* Deep dark background often looks better than pure black for docs */
+  --background: 0 0% 10%; 
+  --foreground: 0 0% 100%;
+  
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 65%;
+  
+  --card: 0 0% 12%;
+  --card-foreground: 0 0% 100%;
+  
+  --popover: 0 0% 12%;
+  --popover-foreground: 0 0% 100%;
+  
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+}

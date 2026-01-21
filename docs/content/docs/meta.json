@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "index",
+    "quickstart",
+    "setup",
+    "platform",
+    "features",
+    "developer",
+    "api-reference",
+    "sdk"
+  ]
+}

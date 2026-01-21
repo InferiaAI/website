@@ -10,7 +10,6 @@ The Orchestration Gateway uses an **Adapter Pattern** to support diverse compute
 All adapters must implement the `ProviderAdapter` abstract base class located in `services/orchestration/app/services/adapter_engine/adapters/base/adapter.py`.
 
 ```python
-```python
 class ProviderAdapter(ABC):
     @abstractmethod
     async def discover_nodes(self) -> List[Dict]:

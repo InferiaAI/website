@@ -1,0 +1,132 @@
+---
+title: "Orchestration Gateway"
+description: "Compute and Deployment Management"
+---
+
+The Orchestration Gateway manages the lifecycle of model deployments.
+
+## Deployments
+
+### `GET /deployment/deployments`
+List all active deployments across all compute pools.
+
+
+#### `org_id`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Query</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  
+</div>
+
+Filter by Organization ID.
+
+
+### `POST /deployment/deploy`
+Create a new model deployment.
+
+
+#### `model_name`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Name of the model to deploy.
+
+
+
+#### `image`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Docker image to use (e.g., `vllm/vllm-openai:latest`).
+
+
+
+#### `pool_id`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Target Compute Pool ID.
+
+
+
+#### `replicas`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">integer</span>
+  
+</div>
+
+Number of replicas (default: 1).
+
+
+### `POST /deployment/terminate`
+Terminate a running deployment (stops the containers/service).
+
+
+#### `deployment_id`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+The ID of the deployment to stop.
+
+
+### `DELETE /deployment/delete/{deployment_id}`
+Permanently remove a stopped or failed deployment record.
+
+
+#### `deployment_id`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Path</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+The ID of the deployment to delete.
+
+
+## Logs
+
+### `GET /deployment/logs/{deployment_id}`
+Retrieve live logs for a specific deployment. Supports DePIN (IPFS) logs.
+
+## Model Registry
+
+### `POST /deployment/registerModel`
+Register a new model configuration in the system.
+
+
+#### `model_name`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Unique identifier for the model.
+
+
+
+#### `backend`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Inference backend (e.g., `vllm`, `ollama`).
+
+
+### `GET /deployment/getModel/{name}/{version}`
+Get details for a registered model version.

@@ -1,0 +1,11 @@
+{
+  "title": "Developer Guide",
+  "pages": [
+    "architecture",
+    "project-structure",
+    "contributing",
+    "adapters",
+    "guardrails",
+    "troubleshooting"
+  ]
+}

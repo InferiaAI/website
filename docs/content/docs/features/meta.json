@@ -1,0 +1,10 @@
+{
+  "title": "Core Features",
+  "pages": [
+    "features",
+    "inference",
+    "knowledge-base",
+    "guardrails",
+    "prompt-templates"
+  ]
+}

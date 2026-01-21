@@ -1,0 +1,90 @@
+---
+title: "Filtration Gateway"
+description: "Security and Context Resolution Endpoints"
+---
+
+The Filtration Gateway is the security control plane. While mostly used internally by the Inference Gateway, it exposes endpoints for context resolution and prompt processing.
+
+## Context Resolution
+
+### `POST /internal/context/resolve`
+Resolves an API key and model name into a fully configured inference context (deployment details, guardrails, RAG config).
+
+
+#### `api_key`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+The API key used for the request.
+
+
+
+#### `model`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+The requested model alias (e.g., `gpt-4`).
+
+
+**Response:**
+```json
+{
+  "valid": true,
+  "deployment": {
+    "id": "uuid",
+    "endpoint": "http://worker:8000"
+  },
+  "guardrail_config": { ... },
+  "rag_config": { ... }
+}
+```
+
+## Prompt Processing
+
+> [!NOTE]
+> These endpoints are primarily for internal service communication.
+
+### `POST /internal/prompt/process`
+Applies prompt templates and retrieves RAG context before inference.
+
+
+#### `messages`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">array</span>
+  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
+</div>
+
+Original list of messages.
+
+
+
+#### `template_id`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
+  
+</div>
+
+(Optional) Specific template ID to apply.
+
+
+
+#### `rag_config`
+<div className="flex gap-2 text-sm text-muted-foreground mb-2">
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
+  <span className="px-2 py-0.5 rounded-md bg-secondary border">object</span>
+  
+</div>
+
+Configuration for RAG retrieval during this turn.
+
+
+**Response:**
+Returns a modified list of messages including `system` prompts and injected context.

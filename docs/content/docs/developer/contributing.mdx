@@ -37,18 +37,6 @@ pytest
 pytest --cov=inferia
 ```
 
-## Syncing Code
-
-The project uses a monorepo structure where the source of truth is the `services/` directory. If you modify code in `services/`, you must sync it to the `package/` directory before building or testing the package.
-
-**Use the helper script:**
-
-```bash
-./sync_package.sh
-```
-
-This ensures that `package/src/inferia/services/` matches `services/`.
-
 ## Pull Requests
 
 1.  Push your branch to your fork.

@@ -1,0 +1,8 @@
+{
+  "title": "Setup & Configuration",
+  "pages": [
+    "installation",
+    "configuration",
+    "first-deployment"
+  ]
+}
