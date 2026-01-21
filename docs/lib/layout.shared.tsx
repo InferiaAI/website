@@ -15,5 +15,6 @@ export function baseOptions(): BaseLayoutProps {
         />
       ),
     },
+    githubUrl: 'https://github.com/InferiaAI/website',
   };
 }
