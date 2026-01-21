@@ -3,9 +3,7 @@ import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { baseOptions } from '@/lib/layout.shared';
 
 export default function Layout({ children }: LayoutProps<'/docs'>) {
-  return (
-    <DocsLayout tree={source.getPageTree()} {...baseOptions()}>
-      {children}
-    </DocsLayout>
-  );
+  // @ts-expect-error React 19 types compatibility
+  const layout = <DocsLayout tree={source.getPageTree()} {...baseOptions()}>{children}</DocsLayout>;
+  return layout;
 }
