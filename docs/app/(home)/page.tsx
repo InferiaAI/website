@@ -8,14 +8,6 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="py-24 px-6 md:px-12 max-w-5xl mx-auto space-y-8">
         <div className="flex flex-col items-center justify-center space-y-8">
-            <Image 
-              src="https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/assets/inferia-cli.gif?token=GHSAT0AAAAAADMPEA35H4G6IG5J3HHURAGI2LQU53A" 
-              alt="Inferia CLI Demo" 
-              width={600} 
-              height={400} 
-              unoptimized
-              className="rounded-lg shadow-2xl border border-border w-full max-w-2xl"
-            />
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
             The Operating System for <br />
             <span className="text-primary">LLMs in Production</span>
