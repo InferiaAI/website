@@ -20,7 +20,7 @@ These are the runnable services that get deployed.
 -   **`inference-gateway/`**: Entry point for API requests.
 -   **`filtration-gateway/`**: Entry point for safety guardrails.
 -   **`orchestration-gateway/`**: Entry point for orchestration.
--   **`docs/`**: This documentation site (built with Mintlify).
+-   **`docs/`**: This documentation site (built with Fumadocs/Next.js).
 -   **`dashboard/`**: React/Next.js frontend for the management console.
 
 ## 2. Package (`package/`)
@@ -33,5 +33,5 @@ This directory contains the source code for the `inferia` package. **All core lo
 
 ## 3. Deploy (`deploy/`)
 
--   **`.env`**: Centralized environment configuration.
--   **`docker-compose.yml`**: Definition for running the entire stack locally.
+-   **`.env`**: Centralized environment configuration (found in root and `deploy/`).
+-   **`docker-compose.yml`**: Definition for running the entire stack locally (found in root and `deploy/`).
