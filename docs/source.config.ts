@@ -15,8 +15,10 @@ export const docs = defineDocs({
   },
 });
 
+import { remarkMdxMermaid } from 'fumadocs-mermaid';
+
 export default defineConfig({
   mdxOptions: {
-    // MDX options
+    remarkPlugins: [remarkMdxMermaid],
   },
 });
