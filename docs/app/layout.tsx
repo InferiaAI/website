@@ -13,7 +13,15 @@ export const metadata = {
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   // @ts-ignore React 19 types compatibility
-  const root = <RootProvider>{children}</RootProvider>;
+  const root = (
+    <RootProvider
+      theme={{
+        defaultTheme: 'dark',
+      }}
+    >
+      {children}
+    </RootProvider>
+  );
 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
