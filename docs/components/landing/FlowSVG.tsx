@@ -4,7 +4,7 @@ const NODES = [
   { id: "aws", x: 40, y: -160, src: "/aws.svg", label: "AWS" },
   { id: "gcp", x: 170, y: -50, src: "/gcp.svg", label: "GCP" },
   { id: "azure", x: 140, y: 120, src: "/azure.svg", label: "Azure" },
-  { id: "akasha", x: -120, y: 140, src: "/akasha.svg", label: "Akasha" },
+  { id: "akash", x: -120, y: 140, src: "/akash.svg", label: "akash" },
   { id: "nosana", x: -160, y: -60, src: "/nosana.svg", label: "Nosana" },
 ];
 
@@ -27,10 +27,10 @@ const PROVIDERS = [
     color: "#0078D4",
   },
   {
-    id: "akasha",
+    id: "akash",
     x: 240,
     y: 380,
-    src: "/akasha.svg",
+    src: "/akash.svg",
     label: "Akash",
     color: "#FF414C",
   },

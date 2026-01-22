@@ -95,7 +95,7 @@ export default function UseCases() {
               </h2>
 
               <p className="text-neutral-500 text-md leading-relaxed max-w-xs mb-8">
-                InferiaLLMLLM is used to run secure, private LLM inference in-house at scale.
+                InferiaLLM is used to run secure, private LLM inference in-house at scale.
               </p>
               
               {/* <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">

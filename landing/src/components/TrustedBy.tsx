@@ -34,7 +34,7 @@ const Crosshair = ({ className = "" }: { className?: string }) => (
 
 const COMPANIES = [
   { name: "Nosana", src: "/nosana.svg", color: "#14F195" },
-  { name: "Akasha", src: "/akasha.svg", color: "#FF414C" },
+  { name: "akash", src: "/akash.svg", color: "#FF414C" },
   { name: "GCP", src: "/gcp.svg", color: "#10a37f" },
   { name: "Azure", src: "/azure.svg", color: "#0078D4" },
   { name: "AWS", src: "/aws.svg", color: "#FF9900" },
@@ -51,26 +51,26 @@ export default function TrustedBySection() {
     >
       <WideDashedLineV className="left-6 md:left-12 lg:left-24" />
       <WideDashedLineV className="right-6 md:right-12 lg:right-24" />
-      
+
 
       <div className="w-full max-w-7xl px-6 md:px-12 lg:px-24 mb-16 text-center relative z-10">
         <span className="text-neutral-500 font-mono text-[10px] tracking-[0.3em] uppercase block mb-4 border border-neutral-800 px-3 py-1 w-fit mx-auto rounded-full bg-black/50">
-           Ecosystem
+          Ecosystem
         </span>
         <h3 className="text-xl md:text-4xl font-extralight tracking-tight text-white">
-           Deploy on any Infrastructure
+          Deploy on any Infrastructure
         </h3>
         <p className="mt-2 text-neutral-400 font-mono text-xs md:text-sm tracking-widest opacity-70">
-           SELF-HOSTED · CLOUD-AGNOSTIC · PROVIDER-NEUTRAL
+          SELF-HOSTED · CLOUD-AGNOSTIC · PROVIDER-NEUTRAL
         </p>
       </div>
 
       <div className="w-auto mx-6 md:mx-12 lg:mx-24 relative z-10 self-stretch">
-        
+
         <WideDashedLineH className="top-0 left-0" />
 
         <div className="flex flex-wrap justify-center w-full relative">
-          
+
           {COMPANIES.map((company, i) => (
             <div
               key={i}
@@ -80,7 +80,7 @@ export default function TrustedBySection() {
             >
               <WideDashedLineH className="bottom-0 left-0" />
               <WideDashedLineV className="right-0 top-0" />
-              
+
               <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-[radial-gradient(circle_at_center,var(--glow-color),transparent_70%)]`}
                 style={{ "--glow-color": company.color } as React.CSSProperties}
@@ -105,7 +105,7 @@ export default function TrustedBySection() {
       </div>
 
       <WideDashedLineH className="bottom-0" />
-      
+
       <Crosshair className="bottom-0 left-6 md:left-12 rotate-180 lg:left-24 translate-y-1/2" />
       <Crosshair className="bottom-0 right-6 md:right-12 lg:right-24 translate-y-1/2" />
 
