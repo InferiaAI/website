@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { Shield } from "lucide-react";
 
 const WideDashedLineV = ({ className = "" }: { className?: string }) => (
   <div
@@ -35,6 +36,7 @@ const Crosshair = ({ className = "" }: { className?: string }) => (
 const COMPANIES = [
   { name: "Nosana", src: "/nosana.svg", color: "#14F195" },
   { name: "akash", src: "/akash.svg", color: "#FF414C" },
+  { name: "VPC", icon: Shield, color: "#3B82F6" },
   { name: "GCP", src: "/gcp.svg", color: "#10a37f" },
   { name: "Azure", src: "/azure.svg", color: "#0078D4" },
   { name: "AWS", src: "/aws.svg", color: "#FF9900" },
@@ -87,11 +89,15 @@ export default function TrustedBySection() {
               />
 
               <div className="relative z-10 flex items-center gap-3 opacity-40 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 grayscale group-hover:grayscale-0">
-                <img
-                  src={company.src}
-                  alt={company.name}
-                  className="w-6 h-6 object-contain"
-                />
+                {company.icon ? (
+                  <company.icon className="w-6 h-6" />
+                ) : (
+                  <img
+                    src={company.src}
+                    alt={company.name}
+                    className="w-6 h-6 object-contain"
+                  />
+                )}
                 <span className="text-lg font-bold tracking-tight">
                   {company.name}
                 </span>
