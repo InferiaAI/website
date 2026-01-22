@@ -57,15 +57,12 @@ export default function HeroPage() {
           <nav className="h-20 fixed top-0 left-0 w-full z-50 bg-[#030303]/80 backdrop-blur-xl flex items-center justify-between px-6 md:px-12 lg:px-24 shadow-2xl">
             <WideDashedLineH className="bottom-0 left-0" />
 
-            <div className="flex items-center group cursor-pointer">
+            <div className="flex items-center h-full group cursor-pointer">
               <img
-                src="/inferia.svg"
+                src="/logo.png"
                 alt="InferiaLLM Logo"
-                className="w-full h-full object-contain p-2 opacity-90 group-hover:opacity-100 transition-opacity"
+                className="h-20 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity"
               />
-              <span className="text-xl tracking-tighter text-white hidden md:block group-hover:text-[#00f2ff] transition-colors duration-300">
-                InferiaLLM
-              </span>
             </div>
 
             <div className="flex items-center h-full">
