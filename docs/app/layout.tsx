@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
-  // @ts-expect-error React 19 types compatibility
+  // @ts-ignore React 19 types compatibility
   const root = <RootProvider>{children}</RootProvider>;
 
   return (
