@@ -1,13 +1,10 @@
 "use client";
 import {
-  ArrowRight,
-  Github,
-  Twitter,
-  Disc,
-  Linkedin,
   FileText,
-  Terminal,
   Contact2Icon,
+  Twitter,
+  Github,
+  ArrowRight,
 } from "lucide-react";
 
 const WideDashedLineH = ({ className = "" }: { className?: string }) => (
@@ -76,21 +73,16 @@ export default function Footer() {
 
             <div className="flex items-center gap-6 md:gap-8 text-xs font-mono text-neutral-400 font-medium tracking-wider uppercase">
               <a
-                href="#"
+                href="/docs"
                 className="hover:text-white transition-colors flex items-center gap-2 group"
               >
                 <FileText className="w-3 h-3 opacity-50 group-hover:opacity-100" />{" "}
                 Docs
               </a>
               <a
-                href="#"
-                className="hover:text-white transition-colors flex items-center gap-2 group"
-              >
-                <Terminal className="w-3 h-3 opacity-50 group-hover:opacity-100" />{" "}
-                API
-              </a>
-              <a
-                href="#"
+                href="https://cal.com/inferiaai/15min"
+                target="_blank"
+                rel="noreferrer"
                 className="hover:text-white transition-colors flex items-center gap-2 group"
               >
                 <Contact2Icon className="w-3 h-3 opacity-50 group-hover:opacity-100" />{" "}
@@ -140,18 +132,6 @@ export default function Footer() {
               className="text-neutral-500 hover:text-white transition-colors"
             >
               <Twitter className="w-4 h-4" />
-            </a>
-            <a
-              href="#"
-              className="text-neutral-500 hover:text-white transition-colors"
-            >
-              <Linkedin className="w-4 h-4" />
-            </a>
-            <a
-              href="#"
-              className="text-neutral-500 hover:text-white transition-colors"
-            >
-              <Disc className="w-4 h-4" />
             </a>
           </div>
         </div>
