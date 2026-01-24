@@ -12,8 +12,8 @@ export const metadata = {
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
-  // @ts-ignore React 19 types compatibility
   const root = (
+    // @ts-ignore React 19 types compatibility
     <RootProvider
       theme={{
         defaultTheme: 'dark',

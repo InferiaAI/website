@@ -1,0 +1,65 @@
+---
+title: "Configuration"
+description: "Reference for environment variables and configuration options."
+---
+
+InferiaLLM uses environment variables for configuration. These are typically stored in a `.env` file in the root of your project or injected by your orchestration platform (Kubernetes, ECS, etc.).
+
+## Critical Infrastructure
+
+These core variables are required for the system to function.
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DATABASE_URL` | Primary PostgreSQL connection string (AsyncPg compatible). | `postgresql://inferia:inferia@localhost:5432/inferia` |
+| `REDIS_URL` | Redis connection URL for queues and caching. | `redis://localhost:6379/0` |
+
+## Security & Auth
+
+| Variable | Description |
+| --- | --- |
+| `JWT_SECRET_KEY` | Private key for signing JSON Web Tokens. **Must be rotated in production.** |
+| `INTERNAL_API_KEY` | Shared secret for inter-service communication (e.g. Gateway to Orchestrator). |
+| `SECRET_ENCRYPTION_KEY` | 32-byte Base64 key for encrypting provider credentials at rest. |
+| `SUPERADMIN_EMAIL` | Email for the initial superadmin account. |
+| `SUPERADMIN_PASSWORD` | Password for the initial superadmin account. |
+
+## Compute Providers
+
+Configure these variables to enable specific compute backends.
+
+### AWS
+| Variable | Description |
+| --- | --- |
+| `AWS_ACCESS_KEY_ID` | Access key for AWS API. |
+| `AWS_SECRET_ACCESS_KEY` | Secret key for AWS API. |
+| `AWS_REGION` | Target AWS region (e.g., `us-east-1`). |
+
+### Nosana (DePIN)
+| Variable | Description |
+| --- | --- |
+| `NOSANA_WALLET_PRIVATE_KEY`| Private key for the Solana wallet controlling the Nosana node. |
+| `SOLANA_RPC_URL` | RPC URL for Solana blockchain interactions. |
+
+### Akash
+| Variable | Description |
+| --- | --- |
+| `AKASH_MNEMONIC` | Mnemonic phrase for the Akash wallet. |
+
+### External Models (API)
+| Variable | Description |
+| --- | --- |
+| `GROQ_API_KEY` | API Key for Groq Cloud. |
+| `OPENAI_API_KEY` | API Key for OpenAI. |
+
+## Guardrails
+
+Feature flags to enable or disable specific safety checks.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `GUARDRAIL_ENABLE_PII_DETECTION` | `true` | Scan prompt and completion for PII. |
+| `GUARDRAIL_ENABLE_TOXICITY` | `false` | Check for toxic content. |
+| `GUARDRAIL_ENABLE_PROMPT_INJECTION` | `false` | Detect jailbreaks and injections. |
+| `GUARDRAIL_ENABLE_SECRETS` | `false` | Prevent leakage of API keys/secrets. |
+| `GUARDRAIL_GROQ_API_KEY` | - | Required if using Llama Guard via Groq. |

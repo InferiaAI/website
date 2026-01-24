@@ -7,7 +7,7 @@ You can run Inferia LLM using our Python package (recommended) or via Docker.
 
 ## 1. Using Python Package
 
-The easiest way to get started is by installing the `inferia` package.
+The easiest way to get started is by installing the `inferiallm` package.
 
 ### Prerequisites
 *   Python 3.10+
@@ -39,14 +39,14 @@ pip install inferiallm
     This will create the necessary tables and users in your local PostgreSQL instance based on your `.env` configuration.
 
     ```bash
-    inferia init
+    inferiallm init
     ```
 
 4.  **Start Services**:
     Run all gateways, orchestration, and the dashboard in a single command.
     
     ```bash
-    inferia api-start
+    inferiallm api-start
     ```
 
     **Access the Dashboard:**
@@ -54,7 +54,7 @@ pip install inferiallm
 
 ## 2. Using Docker Compose
 
-If you prefer containerization, use the `deploy` directory.
+If you prefer containerization, use the `deploy` directory. You can also view our official images on [Docker Hub](https://hub.docker.com/r/inferiaai/inferiallm).
 
 ### Prerequisites
 *   Docker & Docker Compose
@@ -63,14 +63,15 @@ If you prefer containerization, use the `deploy` directory.
 
 1.  **Configure Environment**:
     ```bash
-    cd deploy
-    cp .env.sample .env
+    cd deploy/unified
+    cp ../../.env.sample ../.env
     # Edit .env with your keys
+    # Note: deploy/unified uses ../.env, so ensure it is configured
     ```
 
 2.  **Start Services**:
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
 
 3.  **Access Dashboard**:

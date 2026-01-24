@@ -21,28 +21,28 @@ usage: inferia [-h] {init,filtration-gateway,inference-gateway,orchestration-gat
 
 ### Commands
 
-#### `inferia init`
+#### `inferiallm init`
 Initializes the database schema.
-- **Usage**: `inferia init`
+- **Usage**: `inferiallm init`
 - **Requires**: valid `POSTGRES_DSN` in `.env`.
 
-#### `inferia api-start`
+#### `inferiallm api-start`
 Starts the full stack (Inference, Filtration, Orchestrator + Worker) in a single process.
-- **Usage**: `inferia api-start`
+- **Usage**: `inferiallm api-start`
 - **Options**:
   - `--host`: Bind host (default: `0.0.0.0`)
   - `--port`: Bind port (default: `8000`)
   - `--workers`: Number of worker processes.
 
-#### `inferia inference-gateway`
+#### `inferiallm inference-gateway`
 Starts only the Inference Gateway.
 - **Port**: Defaults to `8001`.
 
-#### `inferia filtration-gateway`
+#### `inferiallm filtration-gateway`
 Starts only the Filtration Gateway.
 - **Port**: Defaults to `8000`.
 
-#### `inferia orchestration-gateway`
+#### `inferiallm orchestration-gateway`
 Starts only the Orchestration Gateway (Control Plane).
 - **Port**: Defaults to `8080`.
 

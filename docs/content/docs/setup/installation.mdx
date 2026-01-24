@@ -67,7 +67,7 @@ pip install dist/inferia-*.whl
 Once the package is installed, initialize the database schema. This command uses your `.env` configuration.
 
 ```bash
-inferia init
+inferiallm init
 ```
 
 ## 3. Option B: Run Services Individually (CLI)
@@ -81,14 +81,14 @@ If you prefer to run services individually for debugging, use the `inferia` CLI 
 The entry point for API requests.
 
 ```bash
-inferia inference-gateway
+inferiallm inference-gateway
 ```
 
 ### Filtration Gateway
 The security layer for content safety and policy enforcement.
 
 ```bash
-inferia filtration-gateway
+inferiallm filtration-gateway
 # Note: Ensure internal API keys match in .env
 ```
 
@@ -96,13 +96,13 @@ inferia filtration-gateway
 The control plane for managing compute pools and deployments.
 
 ```bash
-inferia orchestration-gateway
+inferiallm orchestration-gateway
 ```
 
 ### Dashboard
 Runs the management UI on port 3001.
 
-> Note: The dashboard is part of the `inferia api-start` command, but purely static files can be served via standard tools if needed. For development, use `api-start`.
+> Note: The dashboard is part of the `inferiallm api-start` command, but purely static files can be served via standard tools if needed. For development, use `api-start`.
 
 ## 4. Option C: Docker Compose (Full Stack)
 
