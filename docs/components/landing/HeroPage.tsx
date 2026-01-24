@@ -1,6 +1,7 @@
 "use client";
 import { Github, Play } from "lucide-react";
 import { MuxIntegrationSVG } from "./FlowSVG";
+import InstallTabs from "./InstallTabs";
 
 const WideDashedLineH = ({ className = "" }: { className?: string }) => (
   <div
@@ -41,7 +42,7 @@ export default function HeroPage() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');`}</style>
 
       <div
-        className="h-screen w-full bg-[#030303] text-white flex flex-col font-sans selection:bg-[#00f2ff] selection:text-black relative overflow-hidden"
+        className="min-h-screen w-full bg-[#030303] text-white flex flex-col font-sans selection:bg-[#00f2ff] selection:text-black relative overflow-hidden"
         style={{ fontFamily: "'Space Grotesk', sans-serif" }}
       >
         <WideDashedLineV className="left-6 md:left-12 lg:left-24" />
@@ -53,7 +54,7 @@ export default function HeroPage() {
         <Crosshair className="bottom-0 left-6 md:left-12 lg:left-24 translate-y-1/2 rotate-180" />
         <Crosshair className="bottom-0 right-6 md:right-12 lg:right-24 translate-y-1/2" />
 
-        <div className="flex flex-col h-full w-full px-6 md:px-12 lg:px-24">
+        <div className="flex flex-col flex-1 w-full px-6 md:px-12 lg:px-24">
           <nav className="h-20 fixed top-0 left-0 w-full z-50 bg-[#030303]/80 backdrop-blur-xl flex items-center justify-between px-6 md:px-12 lg:px-24 shadow-2xl">
             <WideDashedLineH className="bottom-0 left-0" />
 
@@ -109,7 +110,7 @@ export default function HeroPage() {
             </div>
           </nav>
 
-          <main className="flex-1 flex flex-col xl:flex-row relative overflow-hidden pt-20">
+          <main className="flex-1 flex flex-col xl:flex-row relative pt-20">
             <div className="hidden xl:flex w-1/2 relative items-center justify-center  bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-[#0a0a0a] to-[#030303]">
               <WideDashedLineV className="right-0 top-0" />
 
@@ -118,7 +119,7 @@ export default function HeroPage() {
               </div>
             </div>
 
-            <div className="w-full md:w-1/2 flex flex-col relative bg-[#030303] min-h-150 md:min-h-0">
+            <div className="w-full xl:w-1/2 flex flex-col relative bg-[#030303] min-h-150 md:min-h-0">
               <div className="flex-1 relative flex flex-col justify-center px-4 bg-linear-to-b from-[#030303] to-[#050505]">
                 <WideDashedLineH className="top-0 left-0" />
 
@@ -151,7 +152,7 @@ export default function HeroPage() {
                 <WideDashedLineH className="bottom-0 left-0" />
               </div>
 
-              <div className="relative py-12 bg-[#050505]">
+              <div className="relative py-6 bg-[#050505]">
                 <p className="text-neutral-400 text-sm md:text-lg leading-relaxed pl-6">
                   InferiaLLM is an operating system for running LLM inference
                   in-house at scale. It provides everything required to take a
@@ -163,7 +164,12 @@ export default function HeroPage() {
                 <WideDashedLineH className="bottom-0 left-0" />
               </div>
 
+              <div className="px-6 my-4 relative z-20">
+                <InstallTabs />
+              </div>
+
               <div className="h-24 lg:h-28 flex shrink-0 relative bg-black">
+                <WideDashedLineH className="top-0 left-0" />
                 <a
                   href="https://github.com/InferiaAI/InferiaLLM"
                   target="_blank"
