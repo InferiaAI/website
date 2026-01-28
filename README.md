@@ -9,7 +9,7 @@ This repository contains the source code for the Inferia website and documentati
 
 ## Getting Started
 
-To run the website locally:
+To run the website locally
 
 1. Navigate to the `docs/` or `landing` directory:
    ```bash
