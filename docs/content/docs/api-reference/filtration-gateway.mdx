@@ -1,90 +1,134 @@
 ---
 title: "Filtration Gateway"
-description: "Security and Context Resolution Endpoints"
+description: "Security, Authentication, and Policy Endpoints"
 ---
 
-The Filtration Gateway is the security control plane. While mostly used internally by the Inference Gateway, it exposes endpoints for context resolution and prompt processing.
+The Filtration Gateway is the security control plane. It handles authentication, RBAC, guardrails, and policy enforcement.
 
-## Context Resolution
+## Base URL
+`http://localhost:8000`
 
-### `POST /internal/context/resolve`
-Resolves an API key and model name into a fully configured inference context (deployment details, guardrails, RAG config).
+## Authentication Endpoints
 
+### `POST /auth/login`
+Authenticate user and receive JWT tokens.
 
-#### `api_key`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-The API key used for the request.
-
-
-
-#### `model`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-The requested model alias (e.g., `gpt-4`).
-
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "totp_code": "123456"  // Optional, required if 2FA enabled
+}
+```
 
 **Response:**
 ```json
 {
-  "valid": true,
-  "deployment": {
-    "id": "uuid",
-    "endpoint": "http://worker:8000"
-  },
-  "guardrail_config": { ... },
-  "rag_config": { ... }
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ...",
+  "token_type": "bearer",
+  "user": { "id": "...", "email": "...", "role": "admin" }
 }
 ```
 
-## Prompt Processing
+### `POST /auth/refresh`
+Refresh access token using refresh token.
 
-> [!NOTE]
-> These endpoints are primarily for internal service communication.
+### `GET /auth/me`
+Get current user information.
 
-### `POST /internal/prompt/process`
-Applies prompt templates and retrieves RAG context before inference.
+### `GET /auth/organizations`
+List organizations the user belongs to.
 
+### `POST /auth/switch-org`
+Switch active organization context.
 
-#### `messages`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">array</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
+### 2FA Endpoints
+- `POST /auth/totp/setup` - Initialize TOTP setup
+- `POST /auth/totp/verify` - Verify and enable TOTP
+- `POST /auth/totp/disable` - Disable TOTP
 
-Original list of messages.
+## Management Endpoints
 
+### Deployments
 
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/deployments` | List deployments |
+| POST | `/management/deployments` | Create deployment |
+| GET | `/management/deployments/{id}` | Get deployment details |
+| DELETE | `/management/deployments/{id}` | Delete deployment |
+| GET | `/management/deployments/{id}/logs` | Get inference logs |
+| GET | `/management/deployments/recent-logs` | Get all recent logs |
 
-#### `template_id`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  
-</div>
+### API Keys
 
-(Optional) Specific template ID to apply.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/api-keys` | List API keys |
+| POST | `/management/api-keys` | Create API key |
+| DELETE | `/management/api-keys/{id}` | Revoke API key |
 
+### Configuration
 
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/config/{policy_type}` | Get policy config |
+| POST | `/management/config/{policy_type}` | Update policy config |
+| GET | `/management/config/providers` | List provider configs |
+| POST | `/management/config/providers` | Update provider config |
 
-#### `rag_config`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">object</span>
-  
-</div>
+### Knowledge Base
 
-Configuration for RAG retrieval during this turn.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/knowledge-base/collections` | List collections |
+| POST | `/management/knowledge-base/collections` | Create collection |
+| POST | `/management/knowledge-base/upload` | Upload documents |
 
+### Prompt Templates
 
-**Response:**
-Returns a modified list of messages including `system` prompts and injected context.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/prompts` | List templates |
+| POST | `/management/prompts` | Create template |
+| PUT | `/management/prompts/{id}` | Update template |
+
+## Admin Endpoints (RBAC)
+
+### Roles
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/admin/roles` | List roles |
+| POST | `/admin/roles` | Create role |
+| PUT | `/admin/roles/{name}` | Update role |
+| DELETE | `/admin/roles/{name}` | Delete role |
+| GET | `/admin/roles/permissions/list` | List available permissions |
+
+### Users
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/admin/users` | List organization users |
+| PUT | `/admin/users/{id}/role` | Update user role |
+
+## Audit Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/audit/logs` | Retrieve audit logs (Admin only) |
+
+## Internal Endpoints
+
+These endpoints are for service-to-service communication and require `INTERNAL_API_KEY`.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/internal/context/resolve` | Resolve API key to deployment config |
+| POST | `/internal/guardrails/scan` | Scan content for safety violations |
+| POST | `/internal/prompt/process` | Process prompt (RAG + templates) |
+| POST | `/internal/policy/check_quota` | Check user quota |
+| POST | `/internal/policy/track_usage` | Track usage statistics |
+| POST | `/internal/logs/create` | Create inference log entry |

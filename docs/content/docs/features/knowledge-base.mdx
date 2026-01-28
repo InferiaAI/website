@@ -29,7 +29,7 @@ The system supports ingesting text from various file formats, including:
 You can upload documents programmatically using the API. Ensure your user context has the `KB_ADD_DATA` permission.
 
 ```bash
-curl -X POST "http://localhost:8002/knowledge/data/upload" \
+curl -X POST "http://localhost:8000/knowledge/data/upload" \
   -H "Authorization: Bearer $JWT_TOKEN" \
   -F "file=@./my-document.txt" \
   -F "collection_name=product-manuals"
@@ -44,7 +44,7 @@ curl -X POST "http://localhost:8002/knowledge/data/upload" \
 To see all available collections in your organization:
 
 ```bash
-curl -X GET "http://localhost:8002/knowledge/data/collections" \
+curl -X GET "http://localhost:8000/knowledge/data/collections" \
   -H "Authorization: Bearer $JWT_TOKEN"
 ```
 
@@ -53,7 +53,7 @@ curl -X GET "http://localhost:8002/knowledge/data/collections" \
 To view all files within a specific collection:
 
 ```bash
-curl -X GET "http://localhost:8002/knowledge/data/collections/product-manuals/files" \
+curl -X GET "http://localhost:8000/knowledge/data/collections/product-manuals/files" \
   -H "Authorization: Bearer $JWT_TOKEN"
 ```
 

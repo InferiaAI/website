@@ -11,68 +11,99 @@ The easiest way to get started is by installing the `inferiallm` package.
 
 ### Prerequisites
 *   Python 3.10+
-*   PostgreSQL
-*   Redis
+*   PostgreSQL 14+
+*   Redis 6+
 
 ### Installation
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install inferiallm
-```
-    
-    
+1.  **Install the package**:
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install inferiallm
+    ```
+
+2.  **Configure Environment**:
     ```bash
     curl -o .env https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample
     ```
     
-    Edit the `.env` file to set your database credentials and API keys. The sample file contains defaults for local development.
+    Edit the `.env` file to set your database credentials and secrets.
     
     **Critical Variables:**
-    *   `POSTGRES_DSN`: Connection string for PostgreSQL.
-    *   `REDIS_URL`: Connection string for Redis (Critical for quotas).
-    *   `INTERNAL_API_KEY`: Secret key for inter-service security.
-    *   `GUARDRAIL_GROQ_API_KEY`: Required if using Llama Guard.
+    | Variable | Description |
+    | --- | --- |
+    | `DATABASE_URL` | PostgreSQL connection string (e.g., `postgresql://inferia:inferia@localhost:5432/inferia`) |
+    | `REDIS_HOST` | Redis host (default: `localhost`) |
+    | `REDIS_PORT` | Redis port (default: `6379`) |
+    | `JWT_SECRET_KEY` | Secret for signing access tokens (generate a long random string) |
+    | `INTERNAL_API_KEY` | Secret for service-to-service authentication |
+    | `SECRET_ENCRYPTION_KEY` | 32-byte base64 key for encrypting provider credentials |
+    | `SUPERADMIN_EMAIL` | Email for the initial admin account |
+    | `SUPERADMIN_PASSWORD` | Password for the initial admin account |
 
 3.  **Initialize the Database**:
-    This will create the necessary tables and users in your local PostgreSQL instance based on your `.env` configuration.
+    This creates the necessary tables, roles, and initial admin user.
 
     ```bash
     inferiallm init
     ```
 
 4.  **Start Services**:
-    Run all gateways, orchestration, and the dashboard in a single command.
+    Run all gateways and the dashboard in a single command.
     
     ```bash
-    inferiallm api-start
+    inferiallm start
     ```
 
-    **Access the Dashboard:**
-    Open [http://localhost:3001](http://localhost:3001) in your browser.
+    **Access Points:**
+    | Service | URL |
+    | --- | --- |
+    | Dashboard | http://localhost:3001 |
+    | Orchestration API | http://localhost:8080 |
+    | Filtration Gateway | http://localhost:8000 |
+    | Inference Gateway | http://localhost:8001 |
 
 ## 2. Using Docker Compose
 
-If you prefer containerization, use the `deploy` directory. You can also view our official images on [Docker Hub](https://hub.docker.com/r/inferiaai/inferiallm).
+If you prefer containerization, use the `deploy` directory.
 
 ### Prerequisites
 *   Docker & Docker Compose
 
 ### Steps
 
-1.  **Configure Environment**:
+1.  **Download Configuration**:
     ```bash
-    cd deploy/unified
-    cp ../../.env.sample ../.env
-    # Edit .env with your keys
-    # Note: deploy/unified uses ../.env, so ensure it is configured
+    # Download docker-compose and sample env
+    curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/deploy/docker-compose.yml -o docker-compose.yml
+    curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample -o .env
     ```
 
-2.  **Start Services**:
+2.  **Configure Environment**:
+    Edit `.env` with your secrets. The Docker Compose file will use these variables.
+    
+    > [!IMPORTANT]
+    > At minimum, set `JWT_SECRET_KEY`, `INTERNAL_API_KEY`, and `SECRET_ENCRYPTION_KEY`.
+
+3.  **Start Services**:
     ```bash
     docker compose up -d
     ```
 
-3.  **Access Dashboard**:
+4.  **Access Dashboard**:
     Open [http://localhost:3001](http://localhost:3001).
+    
+    Default credentials: `admin@example.com` / `admin123`
+
+### Docker Services
+
+The unified Docker image starts these services:
+
+| Service | Port | Description |
+| --- | --- | --- |
+| Filtration Gateway | 8000 | Auth, RBAC, Guardrails |
+| Inference Gateway | 8001 | OpenAI-compatible API |
+| Orchestration Gateway | 8080 | Compute & Deployment Management |
+| DePIN Sidecar | 3000 | Nosana/Blockchain interactions |
+| Dashboard | 3001 | Admin UI |

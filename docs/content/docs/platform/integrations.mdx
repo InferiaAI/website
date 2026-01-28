@@ -1,0 +1,258 @@
+---
+title: "Integrations & Adapters"
+description: "Supported compute providers, vector databases, and guardrail providers"
+---
+
+InferiaLLM uses a modular adapter architecture that allows you to integrate with various external services. This page documents all currently supported integrations.
+
+## Compute Providers
+
+Compute providers supply the GPU resources for running LLM inference. InferiaLLM supports decentralized (DePIN) providers.
+
+### Nosana
+
+**Type**: DePIN (Decentralized Physical Infrastructure Network)
+
+Nosana provides decentralized GPU compute on the Solana blockchain. Ideal for cost-effective inference at scale.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported |
+| **Provider Type** | DePIN |
+| **Blockchain** | Solana |
+| **GPU Types** | RTX 3060, RTX 4090, A10G, A100, H100, etc. |
+
+**Configuration:**
+
+1. Navigate to **Dashboard > Settings > Providers > DePIN > Nosana**
+2. Enter your **Solana Wallet Private Key** (Base58 encoded)
+3. Save the configuration
+
+The DePIN sidecar automatically polls for configuration updates every 10 seconds.
+
+**Supported Engines:**
+| Engine | Description |
+| --- | --- |
+| vLLM | High-throughput LLM inference |
+| Ollama | Easy model serving with Caddy auth proxy |
+| vLLM-Omni | Multimodal inference |
+| Triton | NVIDIA Triton Inference Server |
+| Training | Fine-tuning workloads |
+
+**How it Works:**
+1. Configure wallet in Dashboard
+2. Create a compute pool with provider type "Nosana"
+3. Select GPU market (e.g., `nosana-rtx4090`)
+4. Deploy models - the adapter handles job creation, monitoring, and auto-extension
+
+### Akash Network
+
+**Type**: DePIN (Decentralized Cloud)
+
+Akash is a decentralized cloud marketplace on the Cosmos blockchain.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported |
+| **Provider Type** | DePIN |
+| **Blockchain** | Cosmos |
+| **GPU Types** | RTX A6000, H100, and others |
+
+**Configuration:**
+
+1. Navigate to **Dashboard > Settings > Providers > DePIN > Akash**
+2. Enter your **24-word BIP39 Mnemonic** for your Akash wallet
+3. Save the configuration
+
+**Supported Workloads:**
+| Type | Description |
+| --- | --- |
+| Inference | vLLM-based model serving |
+| Training | PyTorch training with TensorBoard |
+
+**How it Works:**
+1. Configure mnemonic in Dashboard
+2. Create a compute pool with provider type "Akash"
+3. Deploy models - the adapter generates SDL manifests, handles bidding, and creates leases
+
+---
+
+## Vector Databases
+
+Vector databases store embeddings for Retrieval Augmented Generation (RAG) workflows.
+
+### ChromaDB
+
+**Type**: Open-source vector database
+
+ChromaDB is the default vector database for InferiaLLM's knowledge base feature.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported (Default) |
+| **Modes** | Local/Self-hosted, Chroma Cloud |
+| **Embedding Support** | OpenAI, HuggingFace, Custom |
+
+**Configuration:**
+
+Navigate to **Dashboard > Settings > Providers > Vector Database > Chroma**
+
+#### Mode A: Local/Self-Hosted
+
+| Setting | Description | Default |
+| --- | --- | --- |
+| **Connection Mode** | Toggle to "Local" | Local |
+| **Chroma URL** | URL of your ChromaDB server | `http://localhost:8000` |
+| **Database Name** | Database for organization isolation | Optional |
+
+If no URL is provided, InferiaLLM uses an embedded persistent client at `./chroma_db`.
+
+#### Mode B: Chroma Cloud
+
+| Setting | Description | Required |
+| --- | --- | --- |
+| **Connection Mode** | Toggle to "Cloud" | Yes |
+| **API Key** | Your Chroma Cloud API key | Yes |
+| **Tenant ID** | Your Chroma Cloud tenant | Yes |
+| **Database Name** | Target database | Yes |
+
+**Organization Isolation:**
+
+Collections are automatically scoped by organization using the prefix: `org_{org_id}_{collection_name}`
+
+---
+
+## Guardrail Providers
+
+Guardrail providers perform safety checks on inputs and outputs to prevent harmful content, prompt injection, and PII leakage.
+
+### LLM Guard (Local)
+
+**Type**: Local/self-hosted guardrails
+
+LLM Guard provides local guardrail capabilities without external API calls. This is the default provider.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported (Default) |
+| **Provider** | Local |
+| **API Key Required** | No |
+
+**Configuration:**
+
+Set via environment variables:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `GUARDRAIL_ENABLE_GUARDRAILS` | `true` | Master on/off switch |
+| `GUARDRAIL_DEFAULT_GUARDRAIL_ENGINE` | `llm-guard` | Set to `llm-guard` |
+| `GUARDRAIL_ENABLE_TOXICITY` | `false` | Enable toxicity detection |
+| `GUARDRAIL_ENABLE_PROMPT_INJECTION` | `false` | Enable prompt injection detection |
+| `GUARDRAIL_ENABLE_SECRETS` | `false` | Enable secrets detection |
+| `GUARDRAIL_ENABLE_CODE_SCANNING` | `false` | Enable code injection detection |
+| `GUARDRAIL_TOXICITY_THRESHOLD` | `0.7` | Toxicity score threshold |
+| `GUARDRAIL_PROMPT_INJECTION_THRESHOLD` | `0.8` | Injection score threshold |
+
+### Llama Guard (via Groq)
+
+**Type**: LLM-based content moderation
+
+Llama Guard is Meta's safety-tuned model for content classification. InferiaLLM accesses it via Groq's ultra-fast inference API.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported |
+| **Provider** | Groq |
+| **Model** | `meta-llama/llama-guard-4-12b` |
+| **API Key Required** | Yes |
+
+**Configuration (Option A - Dashboard):**
+
+1. Navigate to **Dashboard > Settings > Guardrails**
+2. Enable "Llama Guard" provider
+3. Enter your Groq API key
+4. Save configuration
+
+**Configuration (Option B - Environment Variable):**
+
+```bash
+GUARDRAIL_GROQ_API_KEY=your-groq-api-key
+GUARDRAIL_DEFAULT_GUARDRAIL_ENGINE=llama-guard
+```
+
+> Dashboard configuration takes precedence if both are set.
+
+**Supported Categories:**
+- Violence and threats
+- Sexual content
+- Hate speech
+- Self-harm
+- Criminal activity
+- Dangerous instructions
+
+### Lakera Guard
+
+**Type**: Specialized prompt security
+
+Lakera Guard specializes in detecting prompt injection attacks and jailbreak attempts.
+
+| Property | Value |
+| --- | --- |
+| **Status** | Supported |
+| **Provider** | Lakera AI |
+| **API Endpoint** | `https://api.lakera.ai/v2/guard` |
+| **API Key Required** | Yes |
+
+**Configuration (Option A - Dashboard):**
+
+1. Navigate to **Dashboard > Settings > Guardrails**
+2. Enable "Lakera" provider
+3. Enter your Lakera API key
+4. Save configuration
+
+**Configuration (Option B - Environment Variable):**
+
+```bash
+GUARDRAIL_LAKERA_API_KEY=your-lakera-api-key
+```
+
+> Dashboard configuration takes precedence if both are set.
+
+**Detection Capabilities:**
+- Direct prompt injection
+- Indirect prompt injection
+- Jailbreak attempts
+- PII extraction attempts
+- System prompt leakage
+
+---
+
+## Adding New Integrations
+
+InferiaLLM's adapter architecture makes it easy to add new providers.
+
+### Compute Provider Adapters
+
+See [Extending Orchestration](/docs/developer/adapters) for implementing custom compute adapters.
+
+### Guardrail Providers
+
+See [Guardrails Configuration](/docs/developer/guardrails) for implementing custom guardrail providers.
+
+---
+
+## Integration Status Summary
+
+| Category | Provider | Status |
+| --- | --- | --- |
+| **Compute** | Nosana | Supported |
+| **Compute** | Akash | Supported |
+| **Compute** | Kubernetes | Planned |
+| **Compute** | SkyPilot | Planned |
+| **Vector DB** | ChromaDB | Supported |
+| **Vector DB** | Pinecone | Planned |
+| **Vector DB** | Weaviate | Planned |
+| **Guardrails** | LLM Guard (Local) | Supported |
+| **Guardrails** | Llama Guard (Groq) | Supported |
+| **Guardrails** | Lakera | Supported |
+| **Guardrails** | Azure Content Safety | Planned |

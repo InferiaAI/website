@@ -1,53 +1,131 @@
 ---
 title: 'RBAC & Security'
-description: 'Manage access control, roles, and security policies'
-icon: 'lock'
+description: 'Role-based access control and security features'
+icon: 'shield'
 ---
 
-InferiaLLM employs a robust **Role-Based Access Control (RBAC)** system to ensure that users only have access to the resources they are authorized to use. This system covers authentication, authorization, and organization-level security.
+InferiaLLM provides comprehensive security features including authentication, authorization, and audit logging.
 
 ## Authentication
 
-InferiaLLM uses standard **JWT (JSON Web Tokens)** for stateless authentication.
+### JWT-Based Auth
+All API requests require a valid JWT token obtained via login.
 
-### Login Flow
-1.  User submits credentials (username/password) to `/auth/login`.
-2.  If **Two-Factor Authentication (2FA)** is enabled, the user must also provide a TOTP code.
-3.  The server returns an `access_token` (short-lived) and a `refresh_token` (long-lived).
-4.  The client includes the `access_token` in the `Authorization: Bearer <token>` header for all subsequent requests.
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+```
 
-### Two-Factor Authentication (TOTP)
-For enhanced security, users can enable TOTP (Time-based One-Time Password) using apps like Google Authenticator or Authy.
-- **Setup**: Users are shown a QR code to scan.
-- **Enforcement**: Administrators can enforce 2FA for all organization members.
+Response:
+```json
+{
+  "access_token": "eyJ...",
+  "refresh_token": "eyJ...",
+  "token_type": "bearer"
+}
+```
+
+### Two-Factor Authentication (2FA)
+
+TOTP-based 2FA can be enabled per user:
+
+1. **Setup**: `POST /auth/totp/setup` - Returns QR code
+2. **Verify**: `POST /auth/totp/verify` - Verify and enable
+3. **Login**: Include `totp_code` in login request
+
+### API Keys
+
+For programmatic access, generate API keys:
+
+```bash
+curl -X POST http://localhost:8000/management/api-keys \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-app", "deployment_id": "uuid"}'
+```
 
 ## Authorization (RBAC)
 
-Permissions in InferiaLLM are granular but grouped into **Roles** for easier management.
+### Built-in Roles
 
-### Roles
-- **Owner**: Full access to the organization, including billing and destructive actions.
-- **Admin**: Can manage users, deployments, and policies but cannot delete the organization.
-- **Member**: Can view resources and use inference endpoints.
-- **Viewer**: Read-only access.
+| Role | Capabilities |
+| --- | --- |
+| **Admin** | Full access, user management, settings |
+| **Developer** | Deployments, API keys, configurations |
+| **User** | Read access, limited API key creation |
+| **Guest** | View only, no modifications |
 
-### Permissions Reference
+### Permissions
 
-The system enforces permissions at the API level. Below is a reference of key permissions:
+Granular permissions control access:
 
-| Category | Permission | Description |
-| :--- | :--- | :--- |
-| **Deployments** | `deployment:create` | Launch new model deployments. |
-| | `deployment:delete` | Terminate running deployments. |
-| **API Keys** | `api_key:create` | Generate new API keys for inference. |
-| | `api_key:revoke` | Revoke existing API keys. |
-| **Members** | `member:invite` | Invite new users to the organization. |
-| | `member:delete` | Remove users from the organization. |
-| **Knowledge Base** | `knowledge_base:add_data` | Upload documents to collections. |
-| **Audit Logs** | `audit_log:view` | View security and usage logs. |
+| Permission | Description |
+| --- | --- |
+| `model:read` | View models and deployments |
+| `model:write` | Create/modify deployments |
+| `model:delete` | Delete deployments |
+| `apikey:read` | View API keys |
+| `apikey:write` | Create API keys |
+| `admin:users` | Manage users |
+| `admin:roles` | Manage roles |
+| `admin:config` | Modify system settings |
+| `admin:audit` | View audit logs |
 
-## Network Security
+### Custom Roles
 
-- **Internal Gateway**: Services communicate via a secured internal gateway that validates service-to-service tokens.
-- **Isolation**: Each organization's resources (deployments, documents) are logically isolated.
-- **Secrets Management**: Sensitive values (like cloud provider keys) are encrypted at rest.
+Create custom roles via Dashboard or API:
+
+```bash
+curl -X POST http://localhost:8000/admin/roles \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "analyst",
+    "permissions": ["model:read", "apikey:read"]
+  }'
+```
+
+## Organizations
+
+### Multi-Tenancy
+Users can belong to multiple organizations with different roles in each.
+
+### Organization Switching
+```bash
+curl -X POST http://localhost:8000/auth/switch-org \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"org_id": "org-uuid"}'
+```
+
+### Invitations
+Invite users to organizations:
+
+1. Admin creates invitation in Dashboard
+2. User receives invitation link
+3. User accepts and joins organization
+
+## Audit Logging
+
+All actions are logged immutably:
+
+- Authentication events
+- Resource modifications
+- API key usage
+- Configuration changes
+
+### View Audit Logs
+
+```bash
+curl http://localhost:8000/audit/logs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Security Best Practices
+
+1. **Rotate Secrets**: Change `JWT_SECRET_KEY` regularly
+2. **Enable 2FA**: Require for admin accounts
+3. **Least Privilege**: Assign minimal necessary permissions
+4. **Monitor Logs**: Review audit logs for anomalies
+5. **Encrypt at Rest**: Use `SECRET_ENCRYPTION_KEY` for credentials

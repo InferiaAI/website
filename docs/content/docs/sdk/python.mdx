@@ -6,43 +6,87 @@ description: "Official Python client for Inferia LLM"
 ## Installation
 
 ```bash
-pip install inferia
+pip install inferiallm
 ```
-
-
 
 ## CLI Reference
 
-The `inferia` package comes with a built-in CLI for managing the entire platform.
+The `inferiallm` package comes with a built-in CLI for managing the entire platform.
 
 ```bash
-usage: inferia [-h] {init,filtration-gateway,inference-gateway,orchestration-gateway,api-start} ...
+usage: inferiallm [-h] {init,start} ...
 ```
 
 ### Commands
 
 #### `inferiallm init`
-Initializes the database schema.
+Initializes the database schema, creates roles, and sets up the initial admin user.
+
 - **Usage**: `inferiallm init`
-- **Requires**: valid `POSTGRES_DSN` in `.env`.
+- **Requires**: Valid `DATABASE_URL` in `.env`
 
-#### `inferiallm api-start`
-Starts the full stack (Inference, Filtration, Orchestrator + Worker) in a single process.
-- **Usage**: `inferiallm api-start`
+#### `inferiallm start`
+Starts all services (Inference, Filtration, Orchestration gateways + Dashboard).
+
+- **Usage**: `inferiallm start`
 - **Options**:
-  - `--host`: Bind host (default: `0.0.0.0`)
-  - `--port`: Bind port (default: `8000`)
-  - `--workers`: Number of worker processes.
+  - No arguments: Starts all services
+  - `orchestration`: Start only Orchestration Gateway + Worker + DePIN Sidecar
+  - `inference`: Start only Inference Gateway
+  - `filtration`: Start only Filtration Gateway
 
-#### `inferiallm inference-gateway`
-Starts only the Inference Gateway.
-- **Port**: Defaults to `8001`.
+**Examples:**
+```bash
+# Start all services
+inferiallm start
 
-#### `inferiallm filtration-gateway`
-Starts only the Filtration Gateway.
-- **Port**: Defaults to `8000`.
+# Start specific services
+inferiallm start orchestration
+inferiallm start inference
+inferiallm start filtration
+```
 
-#### `inferiallm orchestration-gateway`
-Starts only the Orchestration Gateway (Control Plane).
-- **Port**: Defaults to `8080`.
+### Service Ports
 
+| Service | Default Port |
+| --- | --- |
+| Filtration Gateway | 8000 |
+| Inference Gateway | 8001 |
+| Orchestration Gateway | 8080 |
+| Dashboard | 3001 |
+
+## Using the OpenAI SDK
+
+Since InferiaLLM provides an OpenAI-compatible API, you can use the standard OpenAI Python SDK:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8001/v1",
+    api_key="sk-inferia-..."  # Your API key from Dashboard
+)
+
+response = client.chat.completions.create(
+    model="my-deployment-name",  # Use your Deployment Name
+    messages=[
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## Streaming
+
+```python
+response = client.chat.completions.create(
+    model="my-deployment-name",
+    messages=[{"role": "user", "content": "Tell me a story"}],
+    stream=True
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+```

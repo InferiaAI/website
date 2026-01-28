@@ -3,63 +3,75 @@ title: "Configuration"
 description: "Reference for environment variables and configuration options."
 ---
 
-InferiaLLM uses environment variables for configuration. These are typically stored in a `.env` file in the root of your project or injected by your orchestration platform (Kubernetes, ECS, etc.).
+InferiaLLM uses environment variables for configuration. Store them in a `.env` file or inject via your orchestration platform.
 
-## Critical Infrastructure
-
-These core variables are required for the system to function.
+## Database
 
 | Variable | Description | Default |
 | --- | --- | --- |
-| `DATABASE_URL` | Primary PostgreSQL connection string (AsyncPg compatible). | `postgresql://inferia:inferia@localhost:5432/inferia` |
-| `REDIS_URL` | Redis connection URL for queues and caching. | `redis://localhost:6379/0` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://inferia:inferia@localhost:5432/inferia` |
+| `POSTGRES_DSN` | Alternative PostgreSQL DSN | Same as DATABASE_URL |
+| `PG_ADMIN_USER` | Admin user for `init` command | `postgres` |
+| `PG_ADMIN_PASSWORD` | Admin password for `init` command | - |
 
-## Security & Auth
+## Redis
 
-| Variable | Description |
-| --- | --- |
-| `JWT_SECRET_KEY` | Private key for signing JSON Web Tokens. **Must be rotated in production.** |
-| `INTERNAL_API_KEY` | Shared secret for inter-service communication (e.g. Gateway to Orchestrator). |
-| `SECRET_ENCRYPTION_KEY` | 32-byte Base64 key for encrypting provider credentials at rest. |
-| `SUPERADMIN_EMAIL` | Email for the initial superadmin account. |
-| `SUPERADMIN_PASSWORD` | Password for the initial superadmin account. |
-
-## Compute Providers
-
-Configure these variables to enable specific compute backends.
-
-### AWS
-| Variable | Description |
-| --- | --- |
-| `AWS_ACCESS_KEY_ID` | Access key for AWS API. |
-| `AWS_SECRET_ACCESS_KEY` | Secret key for AWS API. |
-| `AWS_REGION` | Target AWS region (e.g., `us-east-1`). |
-
-### Nosana (DePIN)
-| Variable | Description |
-| --- | --- |
-| `NOSANA_WALLET_PRIVATE_KEY`| Private key for the Solana wallet controlling the Nosana node. |
-| `SOLANA_RPC_URL` | RPC URL for Solana blockchain interactions. |
-
-### Akash
-| Variable | Description |
-| --- | --- |
-| `AKASH_MNEMONIC` | Mnemonic phrase for the Akash wallet. |
-
-### External Models (API)
-| Variable | Description |
-| --- | --- |
-| `GROQ_API_KEY` | API Key for Groq Cloud. |
-| `OPENAI_API_KEY` | API Key for OpenAI. |
-
-## Guardrails
-
-Feature flags to enable or disable specific safety checks.
-
-| Variable | Default | Description |
+| Variable | Description | Default |
 | --- | --- | --- |
-| `GUARDRAIL_ENABLE_PII_DETECTION` | `true` | Scan prompt and completion for PII. |
-| `GUARDRAIL_ENABLE_TOXICITY` | `false` | Check for toxic content. |
-| `GUARDRAIL_ENABLE_PROMPT_INJECTION` | `false` | Detect jailbreaks and injections. |
-| `GUARDRAIL_ENABLE_SECRETS` | `false` | Prevent leakage of API keys/secrets. |
-| `GUARDRAIL_GROQ_API_KEY` | - | Required if using Llama Guard via Groq. |
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_DB` | Redis database number | `0` |
+| `REDIS_USERNAME` | Redis username | `default` |
+| `REDIS_PASSWORD` | Redis password | - |
+
+## Security & Authentication
+
+| Variable | Description |
+| --- | --- |
+| `JWT_SECRET_KEY` | Secret for signing JWTs. **Must be changed in production.** |
+| `INTERNAL_API_KEY` | Secret for service-to-service communication. |
+| `SECRET_ENCRYPTION_KEY` | 32-byte Base64 key for encrypting provider credentials. |
+| `LOG_ENCRYPTION_KEY` | 32-byte hex key for encrypting audit logs. |
+| `SUPERADMIN_EMAIL` | Initial admin user email. |
+| `SUPERADMIN_PASSWORD` | Initial admin user password. |
+
+## Service Ports
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `INFERENCE_PORT` | Inference Gateway port | `8001` |
+| `FILTRATION_PORT` | Filtration Gateway port | `8000` |
+| `ORCHESTRATION_PORT` | Orchestration HTTP port | `8080` |
+| `GRPC_PORT` | Orchestration gRPC port | `50051` |
+
+## Dashboard (Vite)
+
+Set these in `apps/dashboard/.env` if running the dashboard separately.
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | Filtration Gateway URL | `http://localhost:8000` |
+| `VITE_ORCHESTRATOR_URL` | Orchestration Gateway URL | `http://localhost:8080` |
+
+## Feature Flags
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `ENABLE_2FA` | Enable TOTP two-factor authentication | `true` |
+| `GUARDRAIL_PII_DETECTION_ENABLED` | Enable PII detection | `true` |
+| `GUARDRAIL_ENABLE_GUARDRAILS` | Master switch for guardrails | `true` |
+| `GUARDRAIL_DEFAULT_GUARDRAIL_ENGINE` | Default safety provider | `llm-guard` |
+
+## DePIN / Compute Providers
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `NOSANA_SIDECAR_URL` | Nosana sidecar service URL | `http://localhost:3000` |
+| `NOSANA_INTERNAL_API_KEY` | Auth key for Nosana deployments | - |
+| `NOSANA_MODE` | Operation mode (`simulation` or `live`) | `simulation` |
+| `HF_TOKEN` | HuggingFace token for model downloads | - |
+| `AKASH_SIDECAR_URL` | Akash sidecar service URL | - |
+
+## Provider Configuration
+
+Provider API keys (OpenAI, Groq, AWS, etc.) are managed dynamically through the **Dashboard Settings > Providers** page. They are encrypted at rest using `SECRET_ENCRYPTION_KEY`.

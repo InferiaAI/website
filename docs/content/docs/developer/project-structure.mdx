@@ -9,30 +9,29 @@ Inferia LLM follows a structured monorepo pattern to separate executable applica
 
 | Directory | Description |
 | :--- | :--- |
-| **`apps/`** | Deployment entry points (Gateways, Dashboard, Docs). |
-| **`package/`** | The public Python package (`inferia`) containing all core logic and services. |
+| **`apps/`** | Frontend Applications (Dashboard, Documentation). |
+| **`package/`** | The public Python package (`inferia`) containing all core logic, services, and gateways. |
 | **`deploy/`** | Infrastructure-as-Code (Docker Compose, Kubernetes manifests). |
 
 ## 1. Apps (`apps/`)
 
-These are the runnable services that get deployed.
+These are the frontend user interfaces.
 
--   **`inference-gateway/`**: Entry point for API requests.
--   **`filtration-gateway/`**: Entry point for safety guardrails.
--   **`orchestration-gateway/`**: Entry point for orchestration.
--   **`docs/`**: This documentation site (built with Fumadocs/Next.js).
--   **`dashboard/`**: React/Next.js frontend for the management console.
+-   **`dashboard/`**: React (Vite) frontend for the management console.
+-   **`docs/`**: This documentation site (built with Next.js).
 
 ## 2. Package (`package/`)
 
-This directory contains the source code for the `inferia` package. **All core logic lives here.**
+This directory contains the source code for the `inferia` Python package. **All backend logic lives here.**
 
--   **`src/inferia/services/`**: Core business logic (inference, filtration, orchestration).
+-   **`src/inferia/gateways/`**:
+    -   `inference_gateway/`: High-performance proxy for API requests.
+    -   `filtration_gateway/`: Security layer for guardrails and policy.
+    -   `orchestration_gateway/`: Control plane for compute pools and deployments.
+-   **`src/inferia/services/`**: Core business logic modules (used by gateways).
 -   **`src/inferia/cli.py`**: The `inferia` command-line interface entry point.
--   **`src/inferia/gateways/`**: Gateway implementation details.
 
 ## 3. Deploy (`deploy/`)
 
--   **`deploy/unified/`**: **(Recommended)** Unified Docker Compose stack for running all services consistently.
--   **`.env`**: Centralized environment configuration.
 -   **`docker-compose.yml`**: Definition for running the entire stack locally.
+-   **`.env`**: Centralized environment configuration.

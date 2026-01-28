@@ -1,39 +1,124 @@
 ---
-title: "Key Features"
-description: "Explore the capabilities of the Inferia LLM platform"
+title: 'Features'
+description: 'Core capabilities of InferiaLLM'
+icon: 'sparkles'
 ---
 
-Inferia LLM provides a comprehensive suite of tools for managing, securing, and scaling LLM inference.
+InferiaLLM provides a comprehensive set of features for managing LLM infrastructure in production.
 
-## 1. Unified Inference API
+## Inference
 
-Inferia abstracts away the complexity of managing multiple models and providers behind a single, standardized interface.
+### OpenAI-Compatible API
+Drop-in replacement for OpenAI API with full streaming support.
 
--   **OpenAI Compatibility**: Drop-in replacement for OpenAI's API. simply change the `base_url` in your existing SDKs.
--   **Multi-Model Support**: Run Llama 3, Mistral, Gemma, and other open-source models seamlessly.
--   **Streaming**: Full support for Server-Sent Events (SSE) token streaming.
+```python
+from openai import OpenAI
 
-## 2. Advanced Orchestration
+client = OpenAI(
+    base_url="http://localhost:8001/v1",
+    api_key="sk-inferia-..."
+)
 
-The **Orchestration Gateway** intelligently manages your compute resources.
+response = client.chat.completions.create(
+    model="llama-3-8b",
+    messages=[{"role": "user", "content": "Hello!"}],
+    stream=True
+)
+```
 
--   **Dynamic Provisioning**: Automatically spin up worker nodes on Kubernetes, SkyPilot, or DePIN networks (like Nosana, Akash, etc) based on demand.
--   **Load Balancing**: Distribute traffic across healthy nodes with automatic health checks.
--   **Adapter System**: Extensible architecture allows you to plug in any compute provider (AWS, GCP, Azure, On-prem).
+### Automatic Features
+- **Prompt Templates**: System prompts injected automatically
+- **RAG Context**: Retrieved documents from Knowledge Base
+- **Guardrails**: Safety scanning per deployment config
 
-## 3. Robust Security (Filtration)
+## Compute Orchestration
 
-Security is built-in, not bolted on. The **Filtration Gateway** acts as a firewall for your LLMs.
+### Multi-Provider Support
+| Provider | Type | Description |
+| --- | --- | --- |
+| Kubernetes | On-Prem/Cloud | Standard GPU clusters |
+| SkyPilot | Multi-Cloud | AWS, GCP, Azure VMs |
+| Nosana | DePIN | Decentralized GPU network |
+| Akash | DePIN | Decentralized compute |
 
--   **PII Redaction**: Automatically detect and redact sensitive data (emails, phones, etc.) *before* it leaves your infrastructure.
--   **Toxicity Detection**: Block harmful or offensive content in both inputs and outputs using Llama Guard.
--   **Prompt Injection Defense**: Protect against jailbreaking attempts using Lakera or heuristic scanners.
--   **Audit Logging**: Every request and response is logged asynchronously for compliance and debugging.
+### Deployment Management
+- Create, start, stop, terminate deployments
+- Monitor replica status and health
+- View inference and terminal logs
+- Configure rate limits per deployment
 
-## 4. Observability & Control
+## Security & Access Control
 
-Gain full visibility into your inference operations.
+### Authentication
+- JWT-based authentication
+- TOTP two-factor authentication (2FA)
+- Invitation-based onboarding
 
--   **Centralized Dashboard**: Monitor request rates, latency, and error rates in real-time.
--   **API Key Management**: Granular control over access with role-based permissions.
--   **Usage Analytics**: Track token usage and costs per organization or project.
+### RBAC (Role-Based Access Control)
+| Role | Capabilities |
+| --- | --- |
+| Admin | Full access, user management |
+| Developer | Deployments, API keys, configs |
+| User | Read access, limited API keys |
+| Guest | View only |
+
+### API Keys
+- Generate scoped API keys per deployment
+- Automatic rotation support
+- Usage tracking and quotas
+
+## Guardrails
+
+### Safety Scanners
+- **PII Detection**: Redact emails, phone numbers, SSNs
+- **Toxicity Filter**: Block harmful content
+- **Prompt Injection**: Detect jailbreak attempts
+- **Secret Detection**: Prevent API key leakage
+
+### Providers
+- LLM Guard (Local)
+- Llama Guard (Groq API)
+- Lakera Guard (API)
+
+## Knowledge Base (RAG)
+
+### Document Management
+- Upload PDF, DOCX, TXT files
+- Automatic chunking and embedding
+- ChromaDB vector storage
+
+### Deployment Integration
+- Link collections to deployments
+- Automatic context retrieval
+- Configurable chunk count
+
+## Prompt Templates
+
+### Features
+- Jinja2 templating engine
+- Variable injection
+- Version management
+- Per-deployment assignment
+
+### Variables
+- `{{user_message}}` - Current user input
+- `{{context}}` - RAG-retrieved content
+- Custom variables via API
+
+## Observability
+
+### Inference Logs
+- Request/response pairs
+- Token usage and latency
+- Model and deployment metadata
+
+### Audit Logs
+- All administrative actions
+- Security events
+- Immutable history
+
+### Metrics
+- Prometheus-compatible export
+- Request latency (p50, p95, p99)
+- Token throughput
+- Error rates

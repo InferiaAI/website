@@ -1,56 +1,53 @@
 ---
-title: "Configuration"
-description: "Reference guide for all environment variables"
+title: "Quick Configuration"
+description: "Essential environment variables to get started"
 ---
 
-Inferia LLM uses a central `.env` file to configure all services. Below is a comprehensive list of available configuration options.
+> For a complete configuration reference, see [Platform Configuration](/docs/platform/configuration).
 
-## Core Configuration
+## Minimum Required Variables
 
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| **`ENVIRONMENT`** | Runtime environment (`development`, `production`). | `development` | Yes |
-| **`LOG_LEVEL`** | Logging verbosity (`DEBUG`, `INFO`, `WARNING`). | `INFO` | No |
-| **`INTERNAL_API_KEY`** | Shared secret for inter-service communication. | *None* | **Yes** |
-| **`ALLOWED_ORIGINS`** | CORS allowed origins (comma-separated). | `*` | No |
+Create a `.env` file with these essential variables:
 
-## Databases
+```bash
+# Database
+DATABASE_URL=postgresql://inferia:inferia@localhost:5432/inferia
 
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| **`POSTGRES_DSN`** | PostgreSQL connection string. | `postgresql://inferia:inferia@localhost:5432/inferia` | **Yes** |
-| **`REDIS_URL`** | Redis connection string. | `redis://localhost:6379/0` | **Yes** |
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
 
-## Auth & Security
+# Security (CHANGE THESE IN PRODUCTION!)
+JWT_SECRET_KEY=your-secret-key-here
+INTERNAL_API_KEY=your-internal-key-here
+SECRET_ENCRYPTION_KEY=your-32-byte-base64-key
 
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| **`INTERNAL_API_KEY`** | Shared secret for inter-service communication. | *None* | **Yes** |
-| **`JWT_SECRET_KEY`** | Secret for signing auth tokens. | *None* | **Yes** |
-| **`SUPERADMIN_EMAIL`** | Email for the default admin account. | `admin@example.com` | **Yes** |
-| **`SUPERADMIN_PASSWORD`** | Password for default admin. | `admin123` | **Yes** |
+# Initial Admin Account
+SUPERADMIN_EMAIL=admin@example.com
+SUPERADMIN_PASSWORD=admin123
+```
 
-## External Providers
+## Generating Secure Keys
 
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| **`OPENAI_API_KEY`** | Key for OpenAI (if using fallback). | *None* | No |
-| **`HUGGING_FACE_TOKEN`** | Token for downloading private models. | *None* | No |
-| **`NOSANA_API_KEY`** | API Key for Nosana DePIN interactions. | *None* | No |
+```bash
+# Generate JWT_SECRET_KEY and INTERNAL_API_KEY
+openssl rand -hex 32
 
-## Guardrails (Filtration)
-
-| Variable | Description | Default | Required |
-| :--- | :--- | :--- | :--- |
-| **`GUARDRAIL_LAKERA_API_KEY`** | API Key for Lakera Prompt Injection. | *None* | No |
-| **`GUARDRAIL_GROQ_API_KEY`** | API Key for Llama Guard via Groq. | *None* | No |
-| **`PII_REDACTION_ENABLED`** | Enable local Presidio PII removal. | `true` | No |
+# Generate SECRET_ENCRYPTION_KEY (32-byte base64)
+python -c "import secrets, base64; print(base64.b64encode(secrets.token_bytes(32)).decode())"
+```
 
 ## Service Ports
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| **`INFERENCE_PORT`** | Port for Inference Gateway. | `8001` |
-| **`FILTRATION_PORT`** | Port for Filtration Gateway. | `8000` |
-| **`ORCHESTRATION_PORT`** | Port for Orchestration Gateway. | `8080` |
-| **`ORCHESTRATION_GRPC_PORT`** | Port for Orchestration gRPC. | `50051` |
+| Service | Default Port |
+| --- | --- |
+| Filtration Gateway | 8000 |
+| Inference Gateway | 8001 |
+| Orchestration Gateway | 8080 |
+| Dashboard | 3001 |
+
+## Next Steps
+
+- [Full Configuration Reference](/docs/platform/configuration)
+- [Installation Guide](/docs/setup/installation)
+- [First Deployment](/docs/setup/first-deployment)

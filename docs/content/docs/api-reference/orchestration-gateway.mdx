@@ -3,130 +3,170 @@ title: "Orchestration Gateway"
 description: "Compute and Deployment Management"
 ---
 
-The Orchestration Gateway manages the lifecycle of model deployments.
+The Orchestration Gateway manages compute infrastructure, model deployments, and the model registry.
 
-## Deployments
+## Base URL
+- **HTTP**: `http://localhost:8080`
+- **gRPC**: `localhost:50051`
 
-### `GET /deployment/deployments`
-List all active deployments across all compute pools.
-
-
-#### `org_id`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Query</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  
-</div>
-
-Filter by Organization ID.
-
+## Deployment Endpoints
 
 ### `POST /deployment/deploy`
 Create a new model deployment.
 
+**Request:**
+```json
+{
+  "model_name": "my-llama",
+  "model_version": "1.0",
+  "replicas": 1,
+  "gpu_per_replica": 1,
+  "pool_id": "pool-uuid",
+  "workload_type": "inference",
+  "engine": "vllm",
+  "configuration": {},
+  "owner_id": "user-uuid",
+  "org_id": "org-uuid",
+  "inference_model": "meta-llama/Llama-3-8B-Instruct"
+}
+```
 
-#### `model_name`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
+**Response:**
+```json
+{
+  "deployment_id": "uuid",
+  "status": "DEPLOYING"
+}
+```
 
-Name of the model to deploy.
+### `GET /deployment/deployments`
+List all deployments.
 
+**Query Parameters:**
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `org_id` | string | Filter by organization |
 
+### `GET /deployment/status/{deployment_id}`
+Get deployment status and details.
 
-#### `image`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-Docker image to use (e.g., `vllm/vllm-openai:latest`).
-
-
-
-#### `pool_id`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-Target Compute Pool ID.
-
-
-
-#### `replicas`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">integer</span>
-  
-</div>
-
-Number of replicas (default: 1).
-
+### `POST /deployment/start`
+Start a stopped deployment.
 
 ### `POST /deployment/terminate`
-Terminate a running deployment (stops the containers/service).
-
-
-#### `deployment_id`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-The ID of the deployment to stop.
-
+Terminate a running deployment.
 
 ### `DELETE /deployment/delete/{deployment_id}`
-Permanently remove a stopped or failed deployment record.
+Permanently delete a stopped deployment.
 
+## Compute Pool Endpoints
 
-#### `deployment_id`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Path</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
+### `POST /deployment/createpool`
+Create a new compute pool.
 
-The ID of the deployment to delete.
+**Request:**
+```json
+{
+  "pool_name": "gpu-pool-1",
+  "owner_type": "org",
+  "owner_id": "org-uuid",
+  "provider": "nosana",
+  "allowed_gpu_types": ["RTX 4090", "A100"],
+  "max_cost_per_hour": 10.0,
+  "is_dedicated": false,
+  "provider_pool_id": "external-id",
+  "scheduling_policy_json": "{}"
+}
+```
 
+### `GET /deployment/listPools/{owner_id}`
+List compute pools for an owner.
 
-## Logs
+### `GET /deployment/list/pool/{pool_id}/inventory`
+List nodes/instances in a pool.
+
+### `POST /deployment/deletepool/{pool_id}`
+Delete a compute pool.
+
+## Log Endpoints
 
 ### `GET /deployment/logs/{deployment_id}`
-Retrieve live logs for a specific deployment. Supports DePIN (IPFS) logs.
+Get deployment logs (supports DePIN/IPFS logs).
 
-## Model Registry
+### `GET /deployment/logs/{deployment_id}/stream`
+Get WebSocket info for log streaming.
+
+## Model Registry Endpoints
 
 ### `POST /deployment/registerModel`
-Register a new model configuration in the system.
+Register a model configuration.
 
-
-#### `model_name`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-Unique identifier for the model.
-
-
-
-#### `backend`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-Inference backend (e.g., `vllm`, `ollama`).
-
+**Request:**
+```json
+{
+  "model_name": "llama-3-8b",
+  "model_version": "1.0",
+  "backend": "vllm",
+  "artifact_uri": "meta-llama/Llama-3-8B-Instruct",
+  "config_json": {}
+}
+```
 
 ### `GET /deployment/getModel/{name}/{version}`
-Get details for a registered model version.
+Get model details.
+
+### `GET /deployment/listModels/{model_name}`
+List model versions.
+
+### `DELETE /deployment/deleteModel`
+Delete a model registration.
+
+## Inventory Endpoints
+
+### `POST /inventory/heartbeat`
+Node health reporting.
+
+**Request:**
+```json
+{
+  "provider": "nosana",
+  "provider_instance_id": "job-id",
+  "gpu_allocated": 1,
+  "vcpu_allocated": 8,
+  "ram_gb_allocated": 32,
+  "health_score": 100,
+  "state": "READY",
+  "expose_url": "http://worker:8000"
+}
+```
+
+## Provider Resources
+
+### `GET /deployment/provider/resources`
+Discover available resources from a provider.
+
+**Query Parameters:**
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `provider` | string | Provider name (default: `nosana`) |
+
+## gRPC Services
+
+### ComputePoolManagerService
+- `RegisterPool` - Create pool
+- `ListPools` - List pools
+- `DeletePool` - Delete pool
+- `ListPoolInventory` - List pool nodes
+
+### ModelRegistryService
+- `RegisterModel` - Register model
+- `GetModel` - Get model details
+- `ListModels` - List models
+- `DeleteModel` - Delete model
+
+### ModelDeploymentService
+- `DeployModel` - Create deployment
+- `GetDeployment` - Get status
+- `ListDeployments` - List deployments
+- `StartDeployment` - Start deployment
+- `DeleteDeployment` - Terminate deployment

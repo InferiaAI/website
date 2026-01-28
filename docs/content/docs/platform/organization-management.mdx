@@ -1,29 +1,122 @@
 ---
 title: 'Organization Management'
-description: 'Manage teams, workspaces, and memberships'
+description: 'Managing organizations, users, and invitations'
 icon: 'building'
 ---
 
-InferiaLLM uses an **Organization** structure to manage users, resources (pools, deployments), and policies within your instance.
+InferiaLLM supports multi-tenant organization management with user invitations and role assignments.
 
-## Managing Members
+## Organizations
 
-### Inviting Users
-You can invite new members via email.
+Organizations are the top-level tenant boundary. All resources (deployments, API keys, etc.) belong to an organization.
 
-1.  Go to **Settings > Members**.
-2.  Click **Invite Member**.
-3.  Enter their email address.
-4.  Select a **Role** (e.g., Member, Admin).
-5.  Click **Send Invite**.
+### Create Organization
 
-The user will receive an email with a unique link to join the organization. If the SMTP service is not configured, you can copy the invite link manually from the pending invitations list.
+Organizations are created during initial setup or by super admins.
 
-### Revoking Access
-To remove a user:
-1.  Go to **Settings > Members**.
-2.  Find the user in the list.
-3.  Click the **Remove** icon.
-4.  Confirm the action.
+### Organization Settings
 
-The user's API keys associated with this organization will explicitly remain valid until manually revoked, but they will lose access to organization resources immediately.
+Access via **Settings > Organization**:
+
+- Organization name
+- Default settings
+- Billing information (if applicable)
+
+## User Management
+
+### Listing Users
+
+View all users in your organization:
+
+```bash
+curl http://localhost:8000/admin/users \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Changing User Roles
+
+```bash
+curl -X PUT http://localhost:8000/admin/users/{user_id}/role \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "developer"}'
+```
+
+## Invitations
+
+### Invite a User
+
+1. Go to **Settings > Users**
+2. Click **Invite User**
+3. Enter email and select role
+4. Send invitation
+
+Via API:
+```bash
+curl -X POST http://localhost:8000/auth/register-invite \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "newuser@example.com",
+    "role": "developer"
+  }'
+```
+
+### Accept Invitation
+
+Users receive an invitation link that leads to the registration page.
+
+```bash
+# Get invitation details
+curl http://localhost:8000/auth/invitations/{token}
+
+# Accept invitation
+curl -X POST http://localhost:8000/auth/accept-invite \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "invitation-token",
+    "password": "newpassword123",
+    "name": "New User"
+  }'
+```
+
+## Multi-Organization Access
+
+Users can belong to multiple organizations:
+
+### List Organizations
+
+```bash
+curl http://localhost:8000/auth/organizations \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Switch Organization
+
+```bash
+curl -X POST http://localhost:8000/auth/switch-org \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"org_id": "target-org-uuid"}'
+```
+
+This returns new tokens scoped to the target organization.
+
+## Dashboard Features
+
+### Users Page
+- View all organization members
+- See roles and last activity
+- Invite new users
+- Modify user roles
+
+### Roles Page
+- View available roles
+- Create custom roles
+- Define permission sets
+- Assign roles to users
+
+### Security Page
+- Organization security policies
+- 2FA enforcement settings
+- Session management

@@ -1,7 +1,6 @@
 ---
 title: "Inference Gateway"
 description: "OpenAI-compatible inference endpoints"
-openapi: "openapi-inference.json"
 ---
 
 The Inference Gateway provides high-performance, streaming-compatible endpoints for LLM interaction. It is fully compatible with the OpenAI API specification.
@@ -9,42 +8,33 @@ The Inference Gateway provides high-performance, streaming-compatible endpoints 
 ## Base URL
 `http://localhost:8001/v1`
 
+## Authentication
+
+All requests require a Bearer token (API Key generated from the Dashboard).
+
+```bash
+Authorization: Bearer sk-inferia-...
+```
+
 ## Endpoints
 
 ### Chat Completions
 
+`POST /v1/chat/completions`
 
-#### `model`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">string</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
+The main endpoint for chat-based inference.
 
-The name of the deployment to use (e.g., `llama-3-8b`).
+#### Request Body
 
+| Field | Type | Required | Description |
+| --- | --- | --- | --- |
+| `model` | string | Yes | Deployment name (e.g., `llama-3-8b`) |
+| `messages` | array | Yes | Conversation messages |
+| `stream` | boolean | No | Enable SSE streaming (default: false) |
+| `temperature` | float | No | Sampling temperature |
+| `max_tokens` | integer | No | Maximum tokens to generate |
 
-
-#### `messages`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">array</span>
-  <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">Required</span>
-</div>
-
-A list of messages comprising the conversation so far.
-
-
-
-#### `stream`
-<div className="flex gap-2 text-sm text-muted-foreground mb-2">
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">Body</span>
-  <span className="px-2 py-0.5 rounded-md bg-secondary border">boolean</span>
-  
-</div>
-
-If `true`, partial message deltas will be sent via Server-Sent Events.
-
+#### Example Request
 
 ```bash
 curl http://localhost:8001/v1/chat/completions \
@@ -52,6 +42,63 @@ curl http://localhost:8001/v1/chat/completions \
   -H "Authorization: Bearer $API_KEY" \
   -d '{
     "model": "llama-3-8b",
-    "messages": [{"role": "user", "content": "Hello!"}]
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": true
   }'
 ```
+
+#### Response (Non-Streaming)
+
+```json
+{
+  "id": "chatcmpl-...",
+  "object": "chat.completion",
+  "created": 1234567890,
+  "model": "llama-3-8b",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "Hello! How can I help you today?"
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 15,
+    "total_tokens": 25
+  }
+}
+```
+
+#### Response (Streaming)
+
+Server-Sent Events (SSE) format:
+
+```
+data: {"id":"...","choices":[{"delta":{"content":"Hello"}}]}
+
+data: {"id":"...","choices":[{"delta":{"content":"!"}}]}
+
+data: [DONE]
+```
+
+## Request Lifecycle
+
+1. **Authentication**: Validate API key
+2. **Context Resolution**: Resolve deployment config from Filtration Gateway
+3. **Rate Limiting**: Check request/token limits
+4. **Input Guardrails**: Scan for PII, toxicity, prompt injection
+5. **Prompt Processing**: Apply templates, inject RAG context
+6. **Upstream Call**: Route to LLM provider
+7. **Output Guardrails**: Scan response (async or blocking)
+8. **Logging**: Record inference metadata
+
+## Automatic Features
+
+The following are applied automatically based on deployment configuration:
+
+- **Prompt Templates**: System prompts and variable injection
+- **RAG Context**: Retrieved documents from Knowledge Base
+- **Guardrails**: Safety scanning based on deployment policy
+- **Rate Limits**: Per-deployment token/request limits

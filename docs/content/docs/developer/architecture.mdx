@@ -3,52 +3,141 @@ title: "System Architecture"
 description: "Deep dive into the Inferia LLM architecture"
 ---
 
-Inferia LLM utilizes a microservices architecture to decouple inference serving from orchestration and security. This design allows for independent scaling and robust failure isolation.
+InferiaLLM uses a microservices architecture split into two planes:
+
+* **Data Plane** – Handles inference traffic (North-South via REST/HTTP)
+* **Control Plane** – Manages execution policy and routing (East-West via gRPC)
 
 ## High-Level Diagram
 
 ```mermaid
 graph TD
-    Client[Client App] -->|HTTPS| IG[Inference Gateway]
-    IG -->|Scan & Resolve| FG[Filtration Gateway]
-    FG -.->|Internal| OG[Orchestration Gateway]
+    Client[Client App] -->|HTTPS| IG[Inference Gateway :8001]
+    Dashboard[Admin Dashboard :3001] --> FG
+    Dashboard --> OG
+    
+    IG -->|Resolve & Scan| FG[Filtration Gateway :8000]
+    FG -.->|Internal| OG[Orchestration Gateway :8080]
     IG -->|Stream Request| Worker[Model Worker]
 
     FG -->|Safety Check| Providers[Safety Providers]
     OG -->|Manage| Pool[Compute Pools]
     Pool -->|Provision| Worker
+    
+    FG --> DB[(PostgreSQL)]
+    FG --> Redis[(Redis)]
+    OG --> DB
 ```
 
 ## Component Details
 
-### Inference Gateway
-The **Inference Gateway** is a stateless proxy that implements the OpenAI API specification.
-- **Responsibilities**: Request validation, response streaming.
-- **Optimization**: Uses **In-Memory Context Caching** (TTL 60s) to minimize network calls for routing configuration.
-- **Scaling**: Horizontally scalable behind a load balancer.
+### Inference Gateway (Port 8001)
 
-### Filtration Gateway
-The **Filtration Gateway** acts as a centralized security and policy checkpoint.
-- **Responsibilities**: 
-  -   **Context Resolution**: Resolves routing and config for the Inference Gateway (cached locally in-memory).
--   **Parallel Guardrails**: Executes PII redaction and Input Scanning concurrently.
--   **Quota Management**: High-speed **Redis-based** quota enforcement.
-    - **Audit Logging**: Asynchronous logging of all interactions.
-- **Providers**: Integrates with external providers like Llama Guard, Lakera, and local PII models.
+The **Inference Gateway** is a stateless, high-performance proxy that implements the OpenAI API specification.
 
-### Orchestration Gateway
-The **Orchestration Gateway** manages the physical and logical infrastructure. It exposes both a **REST API** (Deployment Management) and a **gRPC Interface** (Internal Service Communication).
-- **Responsibilities**:
-    - **Inventory Management**: Tracking active nodes and their health.
-    - **Job Dispatch**: Using the Adapter Pattern to provision resources on Kubernetes, SkyPilot, or Nosana.
-    - **Model Registry**: Storing configuration for supported models.
+**Responsibilities:**
+- Request validation and normalization
+- Context resolution via Filtration Gateway
+- Rate limiting and quota checks
+- Input/output guardrail enforcement
+- Prompt processing (RAG, templates)
+- Upstream LLM routing and streaming
+
+**Endpoint:** `POST /v1/chat/completions`
+
+**Request Flow:**
+1. Auth → Context Resolution → Rate Limiting → Quota Check
+2. Input Guardrails → Prompt Processing (RAG/Templates)
+3. Upstream LLM Call → Output Guardrails → Logging
+
+### Filtration Gateway (Port 8000)
+
+The **Filtration Gateway** is the security and policy enforcement layer.
+
+**Responsibilities:**
+- Authentication (JWT + TOTP 2FA)
+- Role-Based Access Control (RBAC)
+- Guardrail scanning (PII, toxicity, prompt injection)
+- Quota and rate limit enforcement
+- Audit logging
+- Provider configuration management
+
+**Key Endpoints:**
+| Path | Description |
+| --- | --- |
+| `/auth/*` | Authentication (login, register, 2FA) |
+| `/management/*` | Deployments, API keys, configs |
+| `/internal/*` | Service-to-service APIs |
+| `/admin/*` | RBAC management |
+| `/audit/*` | Audit logs |
+
+### Orchestration Gateway (Port 8080 HTTP, 50051 gRPC)
+
+The **Orchestration Gateway** manages compute infrastructure and model deployments.
+
+**Responsibilities:**
+- Compute pool management
+- Model deployment lifecycle
+- Inventory tracking and heartbeats
+- Multi-provider abstraction (K8s, SkyPilot, Nosana, Akash)
+
+**Key Endpoints:**
+| Path | Description |
+| --- | --- |
+| `/deployment/deploy` | Create deployment |
+| `/deployment/deployments` | List deployments |
+| `/deployment/listPools/{owner_id}` | List compute pools |
+| `/inventory/heartbeat` | Node health reporting |
+
+**gRPC Services:**
+- `ComputePoolManagerService` - Pool CRUD
+- `ModelRegistryService` - Model registry
+- `ModelDeploymentService` - Deployment operations
+
+### Admin Dashboard (Port 3001)
+
+React-based admin interface for managing the entire platform.
+
+**Features:**
+- Deployment management with logs viewer
+- Compute pool and instance management
+- API key management
+- Knowledge base (RAG) management
+- User and role management
+- Provider configuration
+- Audit log viewer
 
 ## Data Flow
 
-1. **Auth**: Client authenticates with `Inference Gateway`.
-2. **Resolve**: IG checks local **in-memory cache** or queries `Filtration Gateway` for context/routing.
-3. **Scan**: Request payload is sent to `Filtration Gateway` for parallel safety scanning.
-4. **Execute**: Validated request is forwarded to the worker (e.g., vLLM container).
-5. **Stream**: Tokens are streamed back to the client.
-6. **Log**: Inference metadata is asynchronously logged to `Filtration Gateway` (fire-and-forget).
+1. **Client Request**: `POST /v1/chat/completions` to Inference Gateway
+2. **Context Resolution**: IG queries Filtration Gateway with API key
+3. **Policy Checks**: Rate limits, quotas, input guardrails
+4. **Prompt Processing**: Apply templates, retrieve RAG context
+5. **Upstream Call**: Route to provider (vLLM, OpenAI, Nosana worker)
+6. **Response Streaming**: Stream tokens back to client
+7. **Logging**: Async log to Filtration Gateway
 
+## Compute Provider Abstraction
+
+The Orchestration Gateway uses an **Adapter Pattern** to abstract infrastructure:
+
+| Adapter | Provider Type | Description |
+| --- | --- | --- |
+| `kubernetes` | On-Prem/Cloud | Standard K8s GPU clusters |
+| `skypilot` | Multi-Cloud | AWS, GCP, Azure VMs |
+| `nosana` | DePIN | Decentralized GPU network (Solana) |
+| `akash` | DePIN | Decentralized compute marketplace |
+
+## Database Schema
+
+**PostgreSQL** stores:
+- Organizations, Users, Roles
+- API Keys, Deployments
+- Policies, Usage quotas
+- Inference logs, Audit logs
+- Compute pools, Inventory
+
+**Redis** provides:
+- Rate limiting counters
+- Hot state caching
+- Task queue (Redis Streams)

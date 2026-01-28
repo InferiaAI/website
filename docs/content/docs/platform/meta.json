@@ -1,7 +1,9 @@
 {
   "title": "Platform Management",
   "pages": [
+    "configuration",
     "organization-management",
-    "rbac-security"
+    "rbac-security",
+    "integrations"
   ]
 }

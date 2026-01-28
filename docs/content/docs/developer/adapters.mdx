@@ -7,7 +7,7 @@ The Orchestration Gateway uses an **Adapter Pattern** to support diverse compute
 
 ## The ProviderAdapter Interface
 
-All adapters must implement the `ProviderAdapter` abstract base class located in `services/orchestration/app/services/adapter_engine/adapters/base/adapter.py`.
+All adapters must implement the `ProviderAdapter` abstract base class located in `package/src/inferia/services/orchestration/app/services/adapter_engine/adapters/base/adapter.py`.
 
 ```python
 class ProviderAdapter(ABC):
@@ -30,7 +30,7 @@ class ProviderAdapter(ABC):
 ## Step-by-Step Implementation
 
 ### 1. Create Adapter Module
-Create a new directory in `app/services/adapter_engine/adapters/<provider_name>/`.
+Create a new directory in `package/src/inferia/services/orchestration/app/services/adapter_engine/adapters/<provider_name>/`.
 
 ### 2. Implement Logic
 Your implementation should handle the specific API calls to the provider's SDK (e.g., AWS Boto3, K8s Client).
@@ -46,12 +46,13 @@ class MyCloudAdapter(ProviderAdapter):
 ```
 
 ### 3. Register Adapter
-Add your new adapter to the registry in `services/orchestration/app/services/adapter_engine/registry.py`.
+Add your new adapter to the registry in `package/src/inferia/services/orchestration/app/services/adapter_engine/registry.py`.
 
 ```python
 ADAPTER_REGISTRY = {
     "kubernetes": KubernetesAdapter,
     "skypilot": SkyPilotAdapter,
+    "nosana": NosanaAdapter,
     "mycloud": MyCloudAdapter,  # Add this
 }
 ```
@@ -59,5 +60,22 @@ ADAPTER_REGISTRY = {
 ## DePIN Integration (Nosana, Akash)
 
 For DePIN integrations, we use a **Sidecar** approach.
-- The adapter communicates with a local Node.js sidecar (consolidated in `depin-sidecar`) via HTTP.
+- The adapter communicates with a local Node.js sidecar via HTTP.
 - The sidecar handles blockchain transactions and IPFS uploads.
+- Sidecar code is located in `package/src/inferia/services/orchestration/depin-sidecar/`.
+
+### Nosana Sidecar
+
+The Nosana sidecar manages communication with the Solana blockchain and Nosana network.
+
+**Configuration:**
+| Variable | Description | Default |
+| --- | --- | --- |
+| `NOSANA_SIDECAR_URL` | Sidecar HTTP endpoint | `http://localhost:3000` |
+| `NOSANA_MODE` | `simulation` or `live` | `simulation` |
+
+### Adding a New DePIN Provider
+
+1. Create sidecar service in `depin-sidecar/src/providers/`
+2. Implement the adapter in `adapter_engine/adapters/<provider>/`
+3. Register both the sidecar routes and Python adapter

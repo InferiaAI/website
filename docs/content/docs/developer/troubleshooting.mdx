@@ -9,23 +9,48 @@ description: "Solutions to common problems"
 **Cause**: The package is not installed in your current environment.
 **Fix**:
 ```bash
-pip install -e .
+pip install inferiallm
 ```
-Or ensure you are running commands with the correct `python` executable or Docker container.
+Or for development:
+```bash
+cd package && pip install -e .
+```
 
 ### `Database connection failed`
 **Cause**: PostgreSQL is not running or credentials in `.env` are incorrect.
 **Fix**:
 1. Check if Postgres is up: `docker ps` or `pg_isready`.
-2. Verify `POSTGRES_DSN` in `.env`.
+2. Verify `DATABASE_URL` (or `POSTGRES_DSN`) in `.env`.
 3. Ensure the database user/password matches what you set up.
+
+Example connection string:
+```
+DATABASE_URL=postgresql://inferia:inferia@localhost:5432/inferia
+```
 
 ### `Redis Connection Error`
 **Cause**: Redis is not reachable.
-**Fix**: Ensure Redis is running on port 6379 (default).
+**Fix**: Ensure Redis is running and check your configuration.
 ```bash
 redis-cli ping
 # Should return PONG
+```
+
+Verify your `.env`:
+```
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+### `SECRET_ENCRYPTION_KEY` Error
+**Cause**: Missing or invalid encryption key for credentials.
+**Fix**: Generate a valid 32-byte base64 key:
+```bash
+python -c "import secrets, base64; print(base64.b64encode(secrets.token_bytes(32)).decode())"
+```
+Add to `.env`:
+```
+SECRET_ENCRYPTION_KEY=<generated-key>
 ```
 
 ## Runtime Issues
@@ -34,14 +59,61 @@ redis-cli ping
 **Cause**: Missing or mismatched `INTERNAL_API_KEY`.
 **Fix**: Ensure all services (Gateways, Workers) share the exact same `INTERNAL_API_KEY` in their `.env` file.
 
+### `401 Unauthorized` on User Endpoints
+**Cause**: Invalid or expired JWT token.
+**Fix**:
+1. Verify `JWT_SECRET_KEY` is the same across all services.
+2. Check token expiration.
+3. Re-authenticate via `/auth/login`.
+
 ### Models Stuck in "Pending"
 **Cause**: No compute nodes are available to take the job.
 **Fix**:
-1. Check the **Dashboard** > **Compute Pools**.
+1. Check the **Dashboard > Compute Pools**.
 2. Ensure you have active workers (or Nosana nodes) registered.
-3. Check `orchestrator.log` for adapter errors.
+3. Check orchestration logs: `docker logs inferia-orchestration`
 
 ### "Model not found"
 **Cause**: The deployment name requested does not match any active deployment.
 **Fix**:
 - Verify the `model` parameter in your API call matches the **Deployment Name** (e.g., `llama-3-8b`), not just the base model name.
+- Check **Dashboard > Deployments** for active deployments.
+
+### Guardrails Not Working
+**Cause**: Guardrails are disabled or provider not configured.
+**Fix**:
+1. Ensure `GUARDRAIL_ENABLE_GUARDRAILS=true` in `.env`.
+2. Configure provider API keys in **Dashboard > Settings > Guardrails**.
+
+## Docker Issues
+
+### Container Fails to Start
+**Cause**: Missing environment variables.
+**Fix**: Ensure all required variables are set:
+```bash
+# Check your .env file has these:
+DATABASE_URL=...
+JWT_SECRET_KEY=...
+INTERNAL_API_KEY=...
+SECRET_ENCRYPTION_KEY=...
+```
+
+### Port Already in Use
+**Cause**: Another service is using the same port.
+**Fix**:
+```bash
+# Find what's using the port
+lsof -i :8000
+
+# Kill it or change ports in .env
+FILTRATION_PORT=8000
+INFERENCE_PORT=8001
+ORCHESTRATION_PORT=8080
+```
+
+## Getting Help
+
+If you're still stuck:
+1. Check the logs: `docker logs <container-name>` or service stdout
+2. Search existing issues on GitHub
+3. Open a new issue with logs and reproduction steps

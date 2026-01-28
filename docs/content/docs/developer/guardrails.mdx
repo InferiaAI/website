@@ -10,17 +10,19 @@ The Filtration Gateway enforces safety policies through a pipeline of guardrails
 ### 1. PII Redaction
 Automatically detects and sanitizes Personally Identifiable Information (PII) such as emails, phone numbers, and addresses.
 - **Provider**: Microsoft Presidio (Local)
-- **Config**: Enabled by default.
+- **Config**: Enabled by default via `GUARDRAIL_PII_DETECTION_ENABLED=true`
 
-### 2. Prompt Injection (Lakera)
+### 2. Prompt Injection Detection
 Detects attempts to bypass system instructions or "jailbreak" the model.
-- **Provider**: Lakera Guard
-- **Env Variable**: `GUARDRAIL_LAKERA_API_KEY`
+- **Provider**: Configurable (Lakera Guard, LLM Guard, etc.)
+- **Config**: Managed via **Dashboard > Settings > Guardrails**
 
-### 3. Toxicity (Llama Guard)
+### 3. Toxicity Detection
 Evaluates content for hate speech, harassment, and explicit material.
-- **Provider**: Llama Guard (via Groq)
-- **Env Variable**: `GUARDRAIL_GROQ_API_KEY`
+- **Provider**: Configurable (Llama Guard via Groq, LLM Guard, etc.)
+- **Config**: Managed via **Dashboard > Settings > Guardrails**
+
+> **Note**: Provider API keys (Lakera, Groq, etc.) are now configured through the Dashboard, not environment variables.
 
 ## Performance Optimization
 
@@ -49,7 +51,7 @@ To add a custom guardrail, you must implement the `GuardrailProvider` interface 
 
 ### 1. Create the Provider
 
-Create a new file in `services/filtration/guardrail/providers/` (e.g., `regex_provider.py`).
+Create a new file in `package/src/inferia/services/filtration/guardrail/providers/` (e.g., `regex_provider.py`).
 
 ```python
 from typing import Dict, Any
@@ -89,7 +91,7 @@ class RegexProvider(GuardrailProvider):
 
 ### 2. Register the Provider
 
-Update `services/filtration/guardrail/engine.py` to initialize your new provider.
+Update `package/src/inferia/services/filtration/guardrail/engine.py` to initialize your new provider.
 
 ```python
 from .providers.regex_provider import RegexProvider
@@ -102,3 +104,11 @@ class GuardrailEngine:
         regex = RegexProvider()
         self.providers[regex.name] = regex
 ```
+
+## Environment Variables
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `GUARDRAIL_PII_DETECTION_ENABLED` | Enable PII detection | `true` |
+| `GUARDRAIL_ENABLE_GUARDRAILS` | Master switch for guardrails | `true` |
+| `GUARDRAIL_DEFAULT_GUARDRAIL_ENGINE` | Default safety provider | `llm-guard` |
