@@ -4,16 +4,15 @@ This repository contains the landing page and documentation for InferiaLLM.
 
 ## Project Structure
 
-This repository contains the source code for the Inferia website and documentation.
-
+This repository contains the source code for the Inferia website and documentation in the `docs/` directory.
 
 ## Getting Started
 
-To run the website locally
+To run the website locally:
 
-1. Navigate to the `docs/` or `landing` directory:
+1. Navigate to the `docs/` directory:
    ```bash
-   cd docs or cd landing
+   cd docs
    ```
 
 2. Install dependencies:
