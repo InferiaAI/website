@@ -1,4 +1,4 @@
-# Inferia Landing & Documentation
+# Inferia Landing and Documentation
 
 This repository contains the landing page and documentation for InferiaLLM.
 
