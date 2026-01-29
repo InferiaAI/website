@@ -182,7 +182,7 @@ export default function HeroPage() {
                 <a
                   href="https://github.com/InferiaAI/InferiaLLM"
                   target="_blank"
-                  className="group relative w-1/3 h-full flex items-center justify-center focus:outline-none overflow-hidden border-r border-white/10"
+                  className="group relative w-1/2 h-full flex items-center justify-center focus:outline-none overflow-hidden border-r border-white/10"
                 >
                   <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
 
@@ -202,7 +202,7 @@ export default function HeroPage() {
                       .getElementById("demo-video")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group relative w-1/3 h-full flex items-center justify-center focus:outline-none overflow-hidden bg-[#030303] hover:bg-[#080808] transition-colors border-r border-white/10"
+                  className="group relative w-1/2 h-full flex items-center justify-center focus:outline-none overflow-hidden bg-[#030303] hover:bg-[#080808] transition-colors"
                 >
                   <div className="absolute inset-0 bg-[#0a0a0a] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
 
@@ -215,24 +215,6 @@ export default function HeroPage() {
                     </span>
                   </div>
                 </button>
-
-                <a
-                  href="https://cal.com/inferiaai/15min"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative w-1/3 h-full flex items-center justify-center focus:outline-none overflow-hidden bg-[#030303] hover:bg-[#080808] transition-colors"
-                >
-                  <div className="absolute inset-0 bg-[#0a0a0a] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-
-                  <div className="relative z-10 flex items-center gap-3">
-                    <div className="p-1 rounded bg-white/5 border border-white/10 group-hover:bg-[#00f2ff] group-hover:border-white/30 transition-colors">
-                      <Calendar className="w-3 h-3 text-neutral-400 group-hover:text-black" />
-                    </div>
-                    <span className="font-medium text-xs md:text-sm lg:text-lg tracking-tight text-neutral-400 group-hover:text-white transition-colors whitespace-nowrap">
-                      SCHEDULE A CALL
-                    </span>
-                  </div>
-                </a>
 
                 <WideDashedLineH className="bottom-0 left-0" />
               </div>

@@ -17,6 +17,7 @@ export default function HomePage() {
   return (
     <main className="flex flex-col min-h-screen bg-[#050505]">
       <HeroPage />
+      <ContactCTA />
       <TrustedBySection />
       <div id="demo-video">
         <VideoDemoSection />
