@@ -70,27 +70,27 @@ inferiallm start inference      # Inference Gateway
 inferiallm start filtration     # Filtration Gateway
 ```
 
-## 3. Option B: Docker Compose
+---
 
-1.  **Configure**:
-    ```bash
-    cd deploy
-    cp ../.env.sample .env
-    # Edit .env with your secrets
-    ```
+## 3. Option B: Docker
 
-2.  **Start**:
-    ```bash
-    docker compose up -d
-    ```
+### 1. Pull Image and Configure Environment
 
-3.  **Access**:
-    | Service | URL |
-    | --- | --- |
-    | Dashboard | http://localhost:3001 |
-    | Orchestration | http://localhost:8080 |
-    | Filtration | http://localhost:8000 |
-    | Inference | http://localhost:8001 |
+```bash
+docker pull inferiaai/inferiallm:latest
+curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample -o .env
+nano .env
+```
+
+### 2. Run the Container
+
+```bash
+docker run -d \
+  --name inferia-app \
+  --env-file .env \
+  -p 8000:8000 -p 8001:8001 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
+  inferiaai/inferiallm:latest
+```
 
 ## CLI Commands
 

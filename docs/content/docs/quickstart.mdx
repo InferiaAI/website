@@ -73,22 +73,27 @@ If you prefer containerization, use the `deploy` directory.
 
 ### Steps
 
-1.  **Download Configuration**:
+1.  **Pull Docker Image**:
     ```bash
-    # Download docker-compose and sample env
-    curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/deploy/docker-compose.yml -o docker-compose.yml
-    curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample -o .env
+    docker pull inferiaai/inferiallm:latest
     ```
 
 2.  **Configure Environment**:
     Edit `.env` with your secrets. The Docker Compose file will use these variables.
-    
+    ```bash
+    curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample -o .env
+    nano .env
+    ```
     > [!IMPORTANT]
     > At minimum, set `JWT_SECRET_KEY`, `INTERNAL_API_KEY`, and `SECRET_ENCRYPTION_KEY`.
 
 3.  **Start Services**:
     ```bash
-    docker compose up -d
+    docker run -d \
+      --name inferia-app \
+      --env-file .env \
+      -p 8000:8000 -p 8001:8001 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
+      inferiaai/inferiallm:latest
     ```
 
 4.  **Access Dashboard**:
