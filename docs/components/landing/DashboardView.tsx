@@ -38,7 +38,7 @@ export default function DashboardSection() {
             <div className="absolute inset-0 z-0">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/886ifpTUKYg?autoplay=1&mute=1" 
+                src="https://www.youtube.com/embed/BPXIf__NPWs?autoplay=1&mute=1" 
                 title="YouTube video"
                 allow="autoplay; encrypted-media; picture-in-picture"
                 referrerPolicy="strict-origin-when-cross-origin"
