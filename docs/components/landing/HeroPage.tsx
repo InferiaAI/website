@@ -153,6 +153,22 @@ export default function HeroPage() {
                     InferiaLLM
                   </h1>
 
+                  <div className="mt-4 mb-4">
+                    <a 
+                      href="https://www.producthunt.com/products/inferiallm?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-inferiallm" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-block opacity-90 hover:opacity-100 transition-opacity"
+                    >
+                      <img 
+                        alt="InferiaLLM - The Operating System for LLMs in Production | Product Hunt" 
+                        width="250" 
+                        height="54" 
+                        src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1071648&theme=light&t=1770039940755"
+                      />
+                    </a>
+                  </div>
+
                   <h2 className="text-xl md:text-2xl text-neutral-400 mt-4 tracking-tight font-medium">
                     The Operating System for LLMs in Production.
                   </h2>
