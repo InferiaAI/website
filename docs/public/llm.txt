@@ -1,0 +1,42 @@
+# Inferia - AI Inference Platform
+
+**Website**: https://inferia.ai
+
+## Overview
+
+Inferia LLM is a comprehensive orchestration platform designed to manage the lifecycle of Large Language Model (LLM) inference. It bridges the gap between raw compute providers (Cloud, On-Prem, DePIN) and end-user applications.
+
+## What We Do
+
+At its core, Inferia provides a unified API to access models running across a distributed network of compute nodes, ensuring high availability, security, and performance.
+
+## Key Features
+
+- **Unified Interface**: OpenAI-compatible endpoints for seamless integration with existing tools and libraries
+- **Security First**: Built-in Filtration Gateway provides PII redaction, prompt injection protection, and content safety scanning
+- **Orchestration**: Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana)
+- **Observability**: Comprehensive logging and metrics via the Dashboard for full visibility into usage and performance
+
+## System Components
+
+Inferia consists of three main modular gateways:
+
+1. **Inference Gateway**: The high-performance entry point for API requests
+2. **Filtration Gateway**: The security engine responsible for guardrails and policy enforcement
+3. **Orchestration Gateway**: The control plane that manages compute resources and model deployments
+
+## Documentation Sections
+
+- **Getting Started**: Quickstart guide and installation instructions
+- **Platform**: Architecture overview and core concepts
+- **Features**: Detailed feature documentation including API keys, billing, and model management
+- **Developer**: Developer guides, SDKs, and architecture details
+- **API Reference**: Complete API documentation for all gateways
+
+## Keywords
+
+AI inference, machine learning, LLM deployment, AI platform, MLOps, model serving, large language models, distributed computing, cloud AI, on-premise AI, DePIN, Kubernetes, OpenAI-compatible API, prompt injection protection, PII redaction, content safety, AI orchestration, model routing, compute management
+
+## Contact
+
+For more information, visit https://inferia.ai or check our documentation at https://inferia.ai/docs

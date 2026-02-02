@@ -4,6 +4,9 @@ Allow: /
 # Sitemap
 Sitemap: https://inferia.ai/sitemap.xml
 
+# LLM-readable site index
+LLM-site: https://inferia.ai/llm.txt
+
 # Block common bot paths
 Disallow: /api/
 Disallow: /_next/
