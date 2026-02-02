@@ -38,13 +38,13 @@ export default function DashboardSection() {
             <div className="absolute inset-0 z-0">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/886ifpTUKYg?autoplay=1&mute=1&controls=0&rel=0"
+                src="https://www.youtube.com/embed/886ifpTUKYg?autoplay=1&mute=1" 
                 title="YouTube video"
                 allow="autoplay; encrypted-media; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             </div>
-          </div>
 
           <div className="absolute -top-8 left-0 flex items-center gap-2">
             <div className="w-1.5 h-1.5 bg-[#00f2ff] rounded-full animate-pulse" />

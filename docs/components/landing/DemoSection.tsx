@@ -68,7 +68,7 @@ export default function VideoDemoSection() {
 
                 <iframe
                     className="w-full h-full grayscale-50 group-hover:grayscale-0 transition-all duration-700 relative z-10"
-                    src="https://youtu.be/BPXIf__NPWs?si=v2EIVtv_e0Vw-rhT&controls=1&rel=0&modestbranding=1"
+                    src="https://www.youtube.com/embed/886ifpTUKYg?autoplay=1&mute=1"
                     title="InferiaLLM Product Demo"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
