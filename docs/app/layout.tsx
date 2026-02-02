@@ -9,6 +9,41 @@ const inter = Inter({
 
 export const metadata = {
   metadataBase: new URL('https://inferia.ai'),
+  title: {
+    default: 'Inferia - AI Inference Platform',
+    template: '%s | Inferia'
+  },
+  description: 'Deploy and manage AI inference workloads with enterprise-grade security, monitoring, and scalability. Build production AI applications with ease.',
+  keywords: ['AI inference', 'machine learning', 'LLM deployment', 'AI platform', 'MLOps', 'model serving'],
+  authors: [{ name: 'Inferia Team' }],
+  creator: 'Inferia',
+  publisher: 'Inferia',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://inferia.ai',
+    siteName: 'Inferia',
+    title: 'Inferia - AI Inference Platform',
+    description: 'Deploy and manage AI inference workloads with enterprise-grade security, monitoring, and scalability.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Inferia - AI Inference Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Inferia - AI Inference Platform',
+    description: 'Deploy and manage AI inference workloads with enterprise-grade security, monitoring, and scalability.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
