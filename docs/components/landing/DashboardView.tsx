@@ -54,6 +54,7 @@ export default function DashboardSection() {
           </div>
         </div>
       </div>
+    </div>
 
       <div className="w-full lg:w-1/2 relative flex flex-col justify-center p-12 sm:p-20 z-10">
         <div className="relative">
