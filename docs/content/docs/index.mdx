@@ -8,9 +8,9 @@ description: "Welcome to the Inferia LLM documentation"
 
 import InstallTabs from "@/components/landing/InstallTabs";
 
-**Inferia LLM** is a comprehensive orchestration platform designed to manage the lifecycle of Large Language Model (LLM) inference. It bridges the gap between raw compute providers (Cloud, On-Prem, DePIN) and end-user applications.
+**Inferia LLM** is the **operating system for LLMs in production**. It acts as the authoritative execution layer between your applications and your AI infrastructure — governing how LLMs are accessed, secured, routed, and run on compute.
 
-At its core, Inferia provides a unified API to access models running across a distributed network of compute nodes, ensuring high availability, security, and performance.
+InferiaLLM provides platform-level primitives as a single, cohesive system: execution entry points, access control, safety enforcement, resource limits, scheduling and routing, compute lifecycle management, and auditing.
 
 <div className="mt-8 mb-8">
   <InstallTabs />
@@ -29,13 +29,13 @@ At its core, Inferia provides a unified API to access models running across a di
     title="Security First"
    
   >
-    Built-in **Filtration Gateway** provides PII redaction, prompt injection protection, and content safety scanning.
+    Built-in **Guardrail Engine** provides PII redaction, prompt injection protection, and content safety scanning.
   </Card>
   <Card
     title="Orchestration"
    
   >
-    Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana).
+    Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana, Akash).
   </Card>
   <Card
     title="Observability"
@@ -47,11 +47,14 @@ At its core, Inferia provides a unified API to access models running across a di
 
 ## System Components
 
-Inferia consists of three main modular gateways:
+Inferia consists of six core services:
 
-1.  **[Inference Gateway](/docs/api-reference/inference-gateway)**: The high-performance entry point for API requests.
-2.  **[Filtration Gateway](/docs/api-reference/filtration-gateway)**: The security engine responsible for guardrails and policy enforcement.
-3.  **[Orchestration Gateway](/docs/api-reference/orchestration-gateway)**: The control plane that manages compute resources and model deployments.
+1.  **[Inference Gateway](/docs/api-reference/inference-gateway)**: Data-plane ingress for all LLM inference traffic.
+2.  **[API Gateway](/docs/api-reference/filtration-gateway)**: Authentication, RBAC, policy enforcement, and quota management.
+3.  **[Orchestration Gateway](/docs/api-reference/orchestration-gateway)**: Compute control authority and execution routing.
+4.  **Guardrail Engine**: Content safety scanning, PII detection, and prompt injection protection.
+5.  **Data Engine**: Knowledge base management, document ingestion, and vector operations.
+6.  **Admin Dashboard**: Administrative control surface for policies, compute pools, usage, and audits.
 
 ## Getting Started
 

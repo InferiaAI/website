@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 
 const TABS = [
-    { id: "python", label: "Python", command: "pip install inferiallm" },
-    { id: "docker", label: "Docker", command: "docker pull inferiaai/inferiallm" },
+    { id: "python", label: "Python", command: "pip install inferiallm==0.1.0b1" },
+    { id: "docker", label: "Docker", command: "docker pull inferiaai/inferiallm:v0.1.0-beta.1" },
     { id: "source", label: "Source", command: "git clone https://github.com/InferiaAI/InferiaLLM.git" },
 ];
 

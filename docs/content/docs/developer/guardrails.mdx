@@ -1,9 +1,9 @@
 ---
 title: "Guardrails Configuration"
-description: "Configuring safety checks and filtration policies"
+description: "Configuring safety checks and guardrail policies"
 ---
 
-The Filtration Gateway enforces safety policies through a pipeline of guardrails. These checks happen before the prompt reaches the LLM (Input Guardrails) and after the LLM generates a response (Output Guardrails).
+The Guardrail Engine (port 8002) enforces safety policies through a pipeline of guardrails. These checks happen before the prompt reaches the LLM (Input Guardrails) and after the LLM generates a response (Output Guardrails).
 
 ## Available Guardrails
 
@@ -26,7 +26,7 @@ Evaluates content for hate speech, harassment, and explicit material.
 
 ## Performance Optimization
 
-The Filtration Gateway utilizes **Parallel Execution** to minimize latency.
+The Guardrail Engine utilizes **Parallel Execution** to minimize latency.
 - **Concurrent Scanning**: PII redaction and Input Guardrails (e.g., Prompt Injection) run in parallel using `asyncio.gather`.
 - **Latency Impact**: This reduces the overhead of safety checks by approximately 40%, ensuring that robust security doesn't compromise user experience.
 
@@ -51,7 +51,7 @@ To add a custom guardrail, you must implement the `GuardrailProvider` interface 
 
 ### 1. Create the Provider
 
-Create a new file in `package/src/inferia/services/filtration/guardrail/providers/` (e.g., `regex_provider.py`).
+Create a new file in `package/src/inferia/services/guardrail/providers/` (e.g., `regex_provider.py`).
 
 ```python
 from typing import Dict, Any
@@ -91,7 +91,7 @@ class RegexProvider(GuardrailProvider):
 
 ### 2. Register the Provider
 
-Update `package/src/inferia/services/filtration/guardrail/engine.py` to initialize your new provider.
+Update `package/src/inferia/services/guardrail/engine.py` to initialize your new provider.
 
 ```python
 from .providers.regex_provider import RegexProvider

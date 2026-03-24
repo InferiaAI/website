@@ -56,7 +56,7 @@ export default function Section3Policy() {
       id: "03",
       label: "Attach Compute",
       icon: Server,
-      desc: "Attach models and compute backends (Kubernetes, On-prem, Cloud). The OS handles scheduling and routing automatically.",
+      desc: "Attach models and compute backends (Kubernetes, On-prem, Cloud, DePIN). The OS handles scheduling and routing automatically.",
     },
     {
       id: "04",

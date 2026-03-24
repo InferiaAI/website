@@ -1,9 +1,9 @@
 ---
-title: "Filtration Gateway"
-description: "Security, Authentication, and Policy Endpoints"
+title: "API Gateway"
+description: "Authentication, RBAC, and Policy Enforcement Endpoints"
 ---
 
-The Filtration Gateway is the security control plane. It handles authentication, RBAC, guardrails, and policy enforcement.
+The API Gateway is the security and policy control plane. It handles authentication, RBAC, quota enforcement, and policy management. Content safety scanning is handled by the separate [Guardrail Engine](/docs/features/guardrails) on port 8002.
 
 ## Base URL
 `http://localhost:8000`
@@ -16,7 +16,7 @@ Authenticate user and receive JWT tokens.
 **Request:**
 ```json
 {
-  "email": "user@example.com",
+  "username": "user@example.com",
   "password": "password123",
   "totp_code": "123456"  // Optional, required if 2FA enabled
 }
@@ -28,7 +28,10 @@ Authenticate user and receive JWT tokens.
   "access_token": "eyJ...",
   "refresh_token": "eyJ...",
   "token_type": "bearer",
-  "user": { "id": "...", "email": "...", "role": "admin" }
+  "expires_in": 3600,
+  "organizations": [
+    {"id": "org-123", "name": "My Org", "role": "admin"}
+  ]
 }
 ```
 
@@ -38,18 +41,53 @@ Refresh access token using refresh token.
 ### `GET /auth/me`
 Get current user information.
 
+### `GET /auth/permissions`
+Get current user's permissions and allowed models.
+
 ### `GET /auth/organizations`
-List organizations the user belongs to.
+List organizations the user belongs to (paginated).
 
 ### `POST /auth/switch-org`
 Switch active organization context.
 
+### Invitation Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/auth/register-invite` | Register a new user via invitation token |
+| POST | `/auth/accept-invite` | Accept an org invitation (existing user) |
+| GET | `/auth/invitations/{token}` | Get invitation details |
+
+> **Note**: Direct registration (`POST /auth/register`) is disabled. New users must be invited to an organization.
+
 ### 2FA Endpoints
-- `POST /auth/totp/setup` - Initialize TOTP setup
+- `POST /auth/totp/setup` - Initialize TOTP setup (returns QR code)
 - `POST /auth/totp/verify` - Verify and enable TOTP
 - `POST /auth/totp/disable` - Disable TOTP
 
 ## Management Endpoints
+
+### Organizations
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/organizations` | List organizations |
+| POST | `/management/organizations` | Create organization |
+| GET | `/management/organizations/{org_id}` | Get organization details |
+| PUT | `/management/organizations/{org_id}` | Update organization |
+| DELETE | `/management/organizations/{org_id}` | Delete organization |
+| GET | `/management/organizations/{org_id}/members` | List organization members |
+| POST | `/management/organizations/{org_id}/invitations` | Send invitation |
+
+### Users
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/users` | List users |
+| POST | `/management/users` | Create user |
+| GET | `/management/users/{user_id}` | Get user details |
+| PUT | `/management/users/{user_id}` | Update user |
+| DELETE | `/management/users/{user_id}` | Delete user |
 
 ### Deployments
 
@@ -58,9 +96,8 @@ Switch active organization context.
 | GET | `/management/deployments` | List deployments |
 | POST | `/management/deployments` | Create deployment |
 | GET | `/management/deployments/{id}` | Get deployment details |
+| PUT | `/management/deployments/{id}` | Update deployment |
 | DELETE | `/management/deployments/{id}` | Delete deployment |
-| GET | `/management/deployments/{id}/logs` | Get inference logs |
-| GET | `/management/deployments/recent-logs` | Get all recent logs |
 
 ### API Keys
 
@@ -74,18 +111,18 @@ Switch active organization context.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/management/config/{policy_type}` | Get policy config |
-| POST | `/management/config/{policy_type}` | Update policy config |
-| GET | `/management/config/providers` | List provider configs |
-| POST | `/management/config/providers` | Update provider config |
+| GET | `/management/configuration` | Get organization config |
+| PUT | `/management/configuration` | Update config |
+| GET | `/management/configuration/policies` | List policies |
+| POST | `/management/configuration/policies` | Create policy |
 
 ### Knowledge Base
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/management/knowledge-base/collections` | List collections |
-| POST | `/management/knowledge-base/collections` | Create collection |
+| GET | `/management/knowledge-base` | List collections |
 | POST | `/management/knowledge-base/upload` | Upload documents |
+| POST | `/management/knowledge-base/retrieve` | Retrieve context |
 
 ### Prompt Templates
 
@@ -95,34 +132,57 @@ Switch active organization context.
 | POST | `/management/prompts` | Create template |
 | PUT | `/management/prompts/{id}` | Update template |
 
+### Insights (Analytics)
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/management/insights/usage` | Usage statistics |
+| GET | `/management/insights/costs` | Cost analysis |
+
 ## Admin Endpoints (RBAC)
 
 ### Roles
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/admin/roles` | List roles |
-| POST | `/admin/roles` | Create role |
-| PUT | `/admin/roles/{name}` | Update role |
-| DELETE | `/admin/roles/{name}` | Delete role |
-| GET | `/admin/roles/permissions/list` | List available permissions |
+| GET | `/management/admin/roles` | List roles |
+| POST | `/management/admin/roles` | Create role |
+| PUT | `/management/admin/roles/{name}` | Update role |
+| DELETE | `/management/admin/roles/{name}` | Delete role |
 
 ### Users
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/admin/users` | List organization users |
-| PUT | `/admin/users/{id}/role` | Update user role |
+| GET | `/management/admin/users` | List organization users (admin view) |
+| PUT | `/management/admin/users/{id}/role` | Update user role |
 
 ## Audit Endpoints
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/audit/logs` | Retrieve audit logs (Admin only) |
+| GET | `/audit/logs` | Retrieve audit logs (Admin only). Supports `?category=` filter. |
+| POST | `/audit/internal/log` | Log event (internal, requires `X-Internal-API-Key`) |
+
+**Audit Log Categories:** `auth`, `security`, `deployment`, `api_key`, `organization`, `credential`, `configuration`, `knowledge_base`
+
+## Proxy Routes (Orchestration)
+
+The API Gateway proxies authenticated requests to the Orchestration Gateway:
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| * | `/api/v1/deployments/{path}` | Deployment operations |
+| * | `/api/v1/pools/{path}` | Compute pool operations |
+| GET | `/api/v1/logs/{path}` | Deployment log retrieval |
+| GET | `/api/v1/provider/resources` | Provider resource discovery |
+| * | `/api/v1/inventory/{path}` | Inventory operations |
+| * | `/api/v1/deployment/{path}` | Deployment management |
+| WS | `/api/v1/deployment/ws` | WebSocket for real-time deployment status |
 
 ## Internal Endpoints
 
-These endpoints are for service-to-service communication and require `INTERNAL_API_KEY`.
+These endpoints are for service-to-service communication and require the `X-Internal-API-Key` header.
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
@@ -132,3 +192,6 @@ These endpoints are for service-to-service communication and require `INTERNAL_A
 | POST | `/internal/policy/check_quota` | Check user quota |
 | POST | `/internal/policy/track_usage` | Track usage statistics |
 | POST | `/internal/logs/create` | Create inference log entry |
+| GET | `/internal/models` | List available models/deployments |
+| GET | `/internal/config/provider` | Get masked provider config |
+| GET | `/internal/config/credentials` | Get unmasked credentials (internal only) |

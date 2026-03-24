@@ -17,6 +17,6 @@ export function baseOptions(): BaseLayoutProps {
         </div>
       ),
     },
-    githubUrl: 'https://github.com/InferiaAI/website',
+    githubUrl: 'https://github.com/InferiaAI/InferiaLLM',
   };
 }

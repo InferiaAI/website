@@ -13,19 +13,21 @@ InferiaLLM uses a microservices architecture split into two planes:
 ```mermaid
 graph TD
     Client[Client App] -->|HTTPS| IG[Inference Gateway :8001]
-    Dashboard[Admin Dashboard :3001] --> FG
+    Dashboard[Admin Dashboard :3001] --> AG
     Dashboard --> OG
-    
-    IG -->|Resolve & Scan| FG[Filtration Gateway :8000]
-    FG -.->|Internal| OG[Orchestration Gateway :8080]
+
+    IG -->|Resolve & Scan| AG[API Gateway :8000]
+    AG -.->|Internal| OG[Orchestration Gateway :8080]
+    AG -->|Safety Check| GE[Guardrail Engine :8002]
     IG -->|Stream Request| Worker[Model Worker]
 
-    FG -->|Safety Check| Providers[Safety Providers]
+    GE -->|Scan| Providers[Safety Providers]
     OG -->|Manage| Pool[Compute Pools]
     Pool -->|Provision| Worker
-    
-    FG --> DB[(PostgreSQL)]
-    FG --> Redis[(Redis)]
+    AG -->|Data Ops| DE[Data Engine :8003]
+
+    AG --> DB[(PostgreSQL)]
+    AG --> Redis[(Redis)]
     OG --> DB
 ```
 
@@ -37,9 +39,9 @@ The **Inference Gateway** is a stateless, high-performance proxy that implements
 
 **Responsibilities:**
 - Request validation and normalization
-- Context resolution via Filtration Gateway
+- Context resolution via API Gateway
 - Rate limiting and quota checks
-- Input/output guardrail enforcement
+- Input/output guardrail enforcement via Guardrail Engine
 - Prompt processing (RAG, templates)
 - Upstream LLM routing and streaming
 
@@ -50,26 +52,47 @@ The **Inference Gateway** is a stateless, high-performance proxy that implements
 2. Input Guardrails → Prompt Processing (RAG/Templates)
 3. Upstream LLM Call → Output Guardrails → Logging
 
-### Filtration Gateway (Port 8000)
+### API Gateway (Port 8000)
 
-The **Filtration Gateway** is the security and policy enforcement layer.
+The **API Gateway** is the security and policy enforcement layer.
 
 **Responsibilities:**
 - Authentication (JWT + TOTP 2FA)
 - Role-Based Access Control (RBAC)
-- Guardrail scanning (PII, toxicity, prompt injection)
 - Quota and rate limit enforcement
 - Audit logging
 - Provider configuration management
 
+### Guardrail Engine (Port 8002)
+
+The **Guardrail Engine** handles content safety scanning as a dedicated service.
+
+**Responsibilities:**
+- PII detection and redaction
+- Toxicity filtering
+- Prompt injection detection
+- Secret detection
+- Multiple safety providers (LLM Guard, Llama Guard, Lakera)
+
+### Data Engine (Port 8003)
+
+The **Data Engine** handles knowledge base and data processing operations.
+
+**Responsibilities:**
+- Knowledge base management and vector operations
+- Document ingestion and processing
+- Data transformation and enrichment
+- Integration with ChromaDB for vector storage
+
 **Key Endpoints:**
 | Path | Description |
 | --- | --- |
-| `/auth/*` | Authentication (login, register, 2FA) |
-| `/management/*` | Deployments, API keys, configs |
+| `/auth/*` | Authentication (login, invitations, 2FA) |
+| `/management/*` | Organizations, deployments, API keys, configs, users |
+| `/management/admin/*` | RBAC roles and user management |
 | `/internal/*` | Service-to-service APIs |
-| `/admin/*` | RBAC management |
-| `/audit/*` | Audit logs |
+| `/audit/*` | Audit logs with category filtering |
+| `/api/v1/*` | Proxy routes to Orchestration Gateway |
 
 ### Orchestration Gateway (Port 8080 HTTP, 50051 gRPC)
 
@@ -99,23 +122,26 @@ The **Orchestration Gateway** manages compute infrastructure and model deploymen
 React-based admin interface for managing the entire platform.
 
 **Features:**
-- Deployment management with logs viewer
-- Compute pool and instance management
-- API key management
-- Knowledge base (RAG) management
-- User and role management
-- Provider configuration
-- Audit log viewer
+- Deployment management with preflight validation (VRAM, format, compatibility checks)
+- Compute pool management across Nosana, AWS, GCP, Akash, and Kubernetes
+- API key management with per-deployment scoping
+- Knowledge base (RAG) and prompt template configuration per deployment
+- User, role, and invitation management
+- Multi-credential management for compute providers
+- Audit log viewer with category filtering and actor identification
+- Real-time terminal logs for running deployments via WebSocket
 
 ## Data Flow
 
 1. **Client Request**: `POST /v1/chat/completions` to Inference Gateway
-2. **Context Resolution**: IG queries Filtration Gateway with API key
-3. **Policy Checks**: Rate limits, quotas, input guardrails
-4. **Prompt Processing**: Apply templates, retrieve RAG context
-5. **Upstream Call**: Route to provider (vLLM, OpenAI, Nosana worker)
-6. **Response Streaming**: Stream tokens back to client
-7. **Logging**: Async log to Filtration Gateway
+2. **Context Resolution**: IG queries API Gateway with API key
+3. **Policy Checks**: Rate limits, quotas via API Gateway
+4. **Safety Scan**: Input guardrails via Guardrail Engine
+5. **Prompt Processing**: Apply templates, retrieve RAG context via Data Engine
+6. **Upstream Call**: Route to provider (vLLM, Ollama, OpenAI, Nosana worker)
+7. **Response Streaming**: Stream tokens back to client
+8. **Output Scan**: Output guardrails via Guardrail Engine
+9. **Logging**: Async log to API Gateway
 
 ## Compute Provider Abstraction
 
@@ -131,13 +157,15 @@ The Orchestration Gateway uses an **Adapter Pattern** to abstract infrastructure
 ## Database Schema
 
 **PostgreSQL** stores:
-- Organizations, Users, Roles
-- API Keys, Deployments
-- Policies, Usage quotas
-- Inference logs, Audit logs
-- Compute pools, Inventory
+- Organizations, Users, Roles, Invitations
+- API Keys, Deployments, Policies
+- Usage stats, Quotas, Billing events
+- Inference logs, Audit logs (with categories: auth, security, deployment, api_key, organization, credential, configuration, knowledge_base)
+- Compute pools, Inventory, Workload assignments
+- Provider credentials (encrypted), Provider resources
+- Model registry, System settings
 
 **Redis** provides:
 - Rate limiting counters
-- Hot state caching
-- Task queue (Redis Streams)
+- Hot state caching (context cache with configurable TTL)
+- Task queue (Redis Streams & Pub/Sub)

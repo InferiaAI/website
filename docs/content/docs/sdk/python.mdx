@@ -6,7 +6,7 @@ description: "Official Python client for Inferia LLM"
 ## Installation
 
 ```bash
-pip install inferiallm
+pip install inferiallm==0.1.0b1
 ```
 
 ## CLI Reference
@@ -14,7 +14,7 @@ pip install inferiallm
 The `inferiallm` package comes with a built-in CLI for managing the entire platform.
 
 ```bash
-usage: inferiallm [-h] {init,start} ...
+usage: inferiallm [-h] {init,migrate,start} ...
 ```
 
 ### Commands
@@ -23,17 +23,27 @@ usage: inferiallm [-h] {init,start} ...
 Initializes the database schema, creates roles, and sets up the initial admin user.
 
 - **Usage**: `inferiallm init`
+- **Options**: `--env dev` to rebuild dashboard and sidecar assets
 - **Requires**: Valid `DATABASE_URL` in `.env`
 
-#### `inferiallm start`
-Starts all services (Inference, Filtration, Orchestration gateways + Dashboard).
+#### `inferiallm migrate`
+Applies pending database migrations to an existing database. Run after upgrading to a new version.
 
-- **Usage**: `inferiallm start`
+- **Usage**: `inferiallm migrate`
+- Automatically discovers and applies unrun `.sql` migration files
+
+#### `inferiallm start`
+Starts all services (API Gateway, Inference, Orchestration, Guardrail Engine, Data Engine, Dashboard).
+
+- **Usage**: `inferiallm start [service]`
 - **Options**:
-  - No arguments: Starts all services
-  - `orchestration`: Start only Orchestration Gateway + Worker + DePIN Sidecar
-  - `inference`: Start only Inference Gateway
-  - `filtration`: Start only Filtration Gateway
+  - No arguments / `all`: Starts all services
+  - `orchestration`: Start Orchestration Gateway + Worker + DePIN Sidecar + SkyPilot
+  - `inference`: Start Inference Gateway
+  - `api-gateway`: Start API Gateway
+  - `guardrail`: Start Guardrail Engine
+  - `data`: Start Data Engine
+  - `skypilot`: Start SkyPilot API Server
 
 **Examples:**
 ```bash
@@ -43,16 +53,21 @@ inferiallm start
 # Start specific services
 inferiallm start orchestration
 inferiallm start inference
-inferiallm start filtration
+inferiallm start api-gateway
+inferiallm start guardrail
+inferiallm start data
 ```
 
 ### Service Ports
 
 | Service | Default Port |
 | --- | --- |
-| Filtration Gateway | 8000 |
+| API Gateway | 8000 |
 | Inference Gateway | 8001 |
+| Guardrail Engine | 8002 |
+| Data Engine | 8003 |
 | Orchestration Gateway | 8080 |
+| DePIN Sidecar | 3000 |
 | Dashboard | 3001 |
 
 ## Using the OpenAI SDK

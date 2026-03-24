@@ -108,17 +108,26 @@ Invite users to organizations:
 
 ## Audit Logging
 
-All actions are logged immutably:
+All actions are logged immutably with structured categories:
 
-- Authentication events
-- Resource modifications
-- API key usage
-- Configuration changes
+- **auth**: Login, logout, token refresh, 2FA events
+- **security**: Permission changes, rate limit violations
+- **deployment**: Create, start, stop, terminate, delete
+- **api_key**: Key creation, revocation
+- **organization**: Org CRUD, member management
+- **credential**: Provider credential changes
+- **configuration**: Settings and policy modifications
+- **knowledge_base**: Document uploads, collection management
 
 ### View Audit Logs
 
 ```bash
+# All logs
 curl http://localhost:8000/audit/logs \
+  -H "Authorization: Bearer $TOKEN"
+
+# Filter by category
+curl "http://localhost:8000/audit/logs?category=security" \
   -H "Authorization: Bearer $TOKEN"
 ```
 

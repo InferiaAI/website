@@ -26,23 +26,24 @@ const WideDashedLineH = ({ className = "" }) => (
 );
 
 const PROBLEM_LIST = [
-  "Inference Proxy",
-  "User Management",
-  "Auth & RBAC",
-  "Request Scheduling",
-  "Routing Infrastructure",
-  "GPU Orchestration",
-  "Audit Logs",
+  "API Gateways",
+  "Authentication & RBAC",
+  "Safety & Guardrails",
+  "Quota & Budget Enforcement",
+  "Usage & Cost Tracking",
+  "Inference Routing Logic",
+  "GPU Provisioning & Scaling",
+  "Audit Logging",
 ];
 
 const SOLUTION_LIST = [
-  "User & App Access",
-  "Inference Proxying",
-  "Request Validation",
-  "Scheduling & Routing",
-  "Compute Execution",
-  "Resource Tracking",
-  "Audit & Observability",
+  "LLM Deployment & Inference",
+  "Access Control & Proxying",
+  "Policy & Auth Enforcement",
+  "Safety & Request Filtering",
+  "Backend Selection & Routing",
+  "Compute Lifecycle Management",
+  "Usage, Cost & Audit Recording",
 ];
 
 export default function ProbSolution() {

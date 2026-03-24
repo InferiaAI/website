@@ -11,6 +11,7 @@ InferiaLLM uses environment variables for configuration. Store them in a `.env` 
 | --- | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://inferia:inferia@localhost:5432/inferia` |
 | `POSTGRES_DSN` | Alternative PostgreSQL DSN | Same as DATABASE_URL |
+| `DATABASE_SSL` | Enable SSL for database connections | `true` |
 | `PG_ADMIN_USER` | Admin user for `init` command | `postgres` |
 | `PG_ADMIN_PASSWORD` | Admin password for `init` command | - |
 
@@ -18,11 +19,12 @@ InferiaLLM uses environment variables for configuration. Store them in a `.env` 
 
 | Variable | Description | Default |
 | --- | --- | --- |
-| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_HOST` | Redis hostname | `localhost` |
 | `REDIS_PORT` | Redis port | `6379` |
 | `REDIS_DB` | Redis database number | `0` |
 | `REDIS_USERNAME` | Redis username | `default` |
 | `REDIS_PASSWORD` | Redis password | - |
+| `REDIS_SSL` | Enable TLS for Redis connections | `false` |
 
 ## Security & Authentication
 
@@ -40,7 +42,9 @@ InferiaLLM uses environment variables for configuration. Store them in a `.env` 
 | Variable | Description | Default |
 | --- | --- | --- |
 | `INFERENCE_PORT` | Inference Gateway port | `8001` |
-| `FILTRATION_PORT` | Filtration Gateway port | `8000` |
+| `API_GATEWAY_PORT` | API Gateway port | `8000` |
+| `GUARDRAIL_PORT` | Guardrail Engine port | `8002` |
+| `DATA_ENGINE_PORT` | Data Engine port | `8003` |
 | `ORCHESTRATION_PORT` | Orchestration HTTP port | `8080` |
 | `GRPC_PORT` | Orchestration gRPC port | `50051` |
 
@@ -50,7 +54,7 @@ Set these in `apps/dashboard/.env` if running the dashboard separately.
 
 | Variable | Description | Default |
 | --- | --- | --- |
-| `VITE_API_BASE_URL` | Filtration Gateway URL | `http://localhost:8000` |
+| `VITE_API_BASE_URL` | API Gateway URL | `http://localhost:8000` |
 | `VITE_ORCHESTRATOR_URL` | Orchestration Gateway URL | `http://localhost:8080` |
 
 ## Feature Flags
@@ -71,6 +75,44 @@ Set these in `apps/dashboard/.env` if running the dashboard separately.
 | `NOSANA_MODE` | Operation mode (`simulation` or `live`) | `simulation` |
 | `HF_TOKEN` | HuggingFace token for model downloads | - |
 | `AKASH_SIDECAR_URL` | Akash sidecar service URL | - |
+
+## CORS & Reverse Proxy
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `ALLOWED_ORIGINS` | Comma-separated list of allowed CORS origins | `http://localhost:3000,http://localhost:5173,http://localhost:8001` |
+| `FORWARDED_ALLOW_IPS` | Trusted reverse proxy IPs for `X-Forwarded-For` resolution | - |
+
+> **Note**: If you deploy behind a reverse proxy (nginx, Caddy, ALB, etc.), set `FORWARDED_ALLOW_IPS` so that uvicorn trusts your proxy and resolves real client IPs. Without this, rate limiting applies to the proxy IP rather than individual clients.
+
+## Circuit Breaker
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `CIRCUIT_BREAKER_FAILURE_THRESHOLD` | Failures before opening circuit breaker | `5` |
+| `CIRCUIT_BREAKER_RECOVERY_TIMEOUT` | Seconds to wait before attempting recovery | `30` |
+
+## Context Cache
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `CONTEXT_CACHE_TTL` | TTL (seconds) for API key context cache in Inference service | `30` |
+| `CONTEXT_CACHE_MAXSIZE` | Maximum number of cached API key contexts | `1000` |
+
+## Rate Limiting
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `LOGIN_RATE_LIMIT` | Login attempts per minute per IP | `5` |
+| `REGISTER_RATE_LIMIT` | Registration attempts per hour per IP | `3` |
+| `RATE_LIMIT_BLOCK_DURATION` | Block duration in seconds after exceeding rate limit | `300` |
+
+## Health Checks
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `HEALTH_CHECK_TIMEOUT` | Timeout for external service health checks (seconds) | `5` |
+| `HEALTH_CHECK_INTERVAL` | Interval between health checks (seconds) | `30` |
 
 ## Provider Configuration
 

@@ -18,6 +18,12 @@ Authorization: Bearer sk-inferia-...
 
 ## Endpoints
 
+### List Models
+
+`GET /v1/models`
+
+Returns available models/deployments for the authenticated API key.
+
 ### Chat Completions
 
 `POST /v1/chat/completions`
@@ -83,10 +89,42 @@ data: {"id":"...","choices":[{"delta":{"content":"!"}}]}
 data: [DONE]
 ```
 
+### Embeddings
+
+`POST /v1/embeddings`
+
+Generate text embeddings using configured embedding models.
+
+### Image Generation
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/v1/images/generations` | Generate images (DALL-E style) |
+| POST | `/v1/images/edits` | Edit existing images |
+
+### Video Generation
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/v1/videos/generations` | Generate videos |
+| POST | `/v1/videos/edits` | Edit existing videos |
+| POST | `/v1/videos/extensions` | Extend existing videos |
+
+## Client IP Forwarding
+
+If requests reach the Inference Gateway through proxies or load balancers, forward client IP with one of these headers (checked in order):
+
+- `X-IP-Address`
+- `X-Client-IP`
+- `X-Forwarded-For` (first IP is used)
+- `X-Real-IP`
+
+The value is stored in `inference_logs.ip_address` and used for IP-based filtering in Insights.
+
 ## Request Lifecycle
 
 1. **Authentication**: Validate API key
-2. **Context Resolution**: Resolve deployment config from Filtration Gateway
+2. **Context Resolution**: Resolve deployment config from API Gateway
 3. **Rate Limiting**: Check request/token limits
 4. **Input Guardrails**: Scan for PII, toxicity, prompt injection
 5. **Prompt Processing**: Apply templates, inject RAG context

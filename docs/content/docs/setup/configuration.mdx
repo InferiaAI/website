@@ -24,13 +24,13 @@ SECRET_ENCRYPTION_KEY=your-32-byte-base64-key
 
 # Initial Admin Account
 SUPERADMIN_EMAIL=admin@example.com
-SUPERADMIN_PASSWORD=admin123
+SUPERADMIN_PASSWORD=CHANGE_THIS_TO_STRONG_PASSWORD
 ```
 
 ## Generating Secure Keys
 
 ```bash
-# Generate JWT_SECRET_KEY and INTERNAL_API_KEY
+# Generate JWT_SECRET_KEY, INTERNAL_API_KEY, or LOG_ENCRYPTION_KEY
 openssl rand -hex 32
 
 # Generate SECRET_ENCRYPTION_KEY (32-byte base64)
@@ -41,9 +41,12 @@ python -c "import secrets, base64; print(base64.b64encode(secrets.token_bytes(32
 
 | Service | Default Port |
 | --- | --- |
-| Filtration Gateway | 8000 |
+| API Gateway | 8000 |
 | Inference Gateway | 8001 |
+| Guardrail Engine | 8002 |
+| Data Engine | 8003 |
 | Orchestration Gateway | 8080 |
+| DePIN Sidecar | 3000 |
 | Dashboard | 3001 |
 
 ## Next Steps
