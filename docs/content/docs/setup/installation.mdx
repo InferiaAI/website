@@ -19,8 +19,8 @@ This guide provides detailed instructions for installing and configuring Inferia
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/inferiallm/inferiallm.git
-    cd inferiallm
+    git clone https://github.com/InferiaAI/InferiaLLM.git
+    cd InferiaLLM
     ```
 
 2.  **Initialize Configuration**:
@@ -34,7 +34,7 @@ This guide provides detailed instructions for installing and configuring Inferia
     | Variable | Description |
     | --- | --- |
     | `DATABASE_URL` | PostgreSQL connection string |
-    | `REDIS_HOST` / `REDIS_PORT` | Redis connection details |
+    | `REDIS_HOST` | Redis hostname (default: `localhost`) |
     | `JWT_SECRET_KEY` | JWT signing secret |
     | `INTERNAL_API_KEY` | Service-to-service auth |
     | `SECRET_ENCRYPTION_KEY` | Credential encryption key |
@@ -45,13 +45,14 @@ This guide provides detailed instructions for installing and configuring Inferia
 
 ### Standard Installation
 ```bash
-pip install inferiallm
+pip install inferiallm==0.1.0b1
 ```
 
 ### Developer Installation
 ```bash
-cd package
-pip install -e .
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e package/
 ```
 
 ### Database Initialization
@@ -65,9 +66,12 @@ inferiallm init
 inferiallm start
 
 # Or start specific services
-inferiallm start orchestration  # Orchestration Gateway
+inferiallm start orchestration  # Orchestration Gateway + Worker + DePIN Sidecar + SkyPilot
 inferiallm start inference      # Inference Gateway
-inferiallm start filtration     # Filtration Gateway
+inferiallm start api-gateway    # API Gateway
+inferiallm start guardrail      # Guardrail Engine
+inferiallm start data           # Data Engine
+inferiallm start skypilot       # SkyPilot API Server
 ```
 
 ---
@@ -77,7 +81,7 @@ inferiallm start filtration     # Filtration Gateway
 ### 1. Pull Image and Configure Environment
 
 ```bash
-docker pull inferiaai/inferiallm:latest
+docker pull inferiaai/inferiallm:v0.1.0-beta.1
 curl -L https://raw.githubusercontent.com/InferiaAI/InferiaLLM/main/.env.sample -o .env
 nano .env
 ```
@@ -88,8 +92,8 @@ nano .env
 docker run -d \
   --name inferia-app \
   --env-file .env \
-  -p 8000:8000 -p 8001:8001 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
-  inferiaai/inferiallm:latest
+  -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
+  inferiaai/inferiallm:v0.1.0-beta.1
 ```
 
 ## CLI Commands
@@ -97,7 +101,11 @@ docker run -d \
 | Command | Description |
 | --- | --- |
 | `inferiallm init` | Initialize database, roles, schemas, and admin user |
+| `inferiallm migrate` | Apply pending database migrations after upgrades |
 | `inferiallm start` | Start all services |
-| `inferiallm start orchestration` | Start Orchestration Gateway + Worker + DePIN Sidecar |
+| `inferiallm start orchestration` | Start Orchestration Gateway + Worker + DePIN Sidecar + SkyPilot |
 | `inferiallm start inference` | Start Inference Gateway |
-| `inferiallm start filtration` | Start Filtration Gateway |
+| `inferiallm start api-gateway` | Start API Gateway |
+| `inferiallm start guardrail` | Start Guardrail Engine |
+| `inferiallm start data` | Start Data Engine |
+| `inferiallm start skypilot` | Start SkyPilot API Server |

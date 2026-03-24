@@ -117,7 +117,7 @@ export default function Footer() {
           </div>
 
           <span className="text-neutral-600 text-[10px] font-mono uppercase hidden md:block">
-            © 2025 Inferia
+            © 2026 Inferia
           </span>
 
           <div className="flex items-center gap-5">

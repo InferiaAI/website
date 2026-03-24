@@ -1,41 +1,69 @@
-# Inferia - AI Inference Platform
+# Inferia - The Operating System for LLMs in Production
 
 **Website**: https://inferia.ai
+**GitHub**: https://github.com/InferiaAI/InferiaLLM
+**PyPI**: https://pypi.org/project/inferiallm/
+**Docker Hub**: https://hub.docker.com/r/inferiaai/inferiallm
+**License**: Apache-2.0
 
 ## Overview
 
-Inferia LLM is a comprehensive orchestration platform designed to manage the lifecycle of Large Language Model (LLM) inference. It bridges the gap between raw compute providers (Cloud, On-Prem, DePIN) and end-user applications.
+InferiaLLM is the operating system for LLMs in production. It acts as the authoritative execution layer between your applications and your AI infrastructure — governing how LLMs are accessed, secured, routed, and run on compute.
 
-## What We Do
-
-At its core, Inferia provides a unified API to access models running across a distributed network of compute nodes, ensuring high availability, security, and performance.
+InferiaLLM provides platform-level primitives as a single, cohesive system: execution entry points, access control and permissions, safety enforcement, resource limits and cost controls, scheduling and routing, compute lifecycle management, and auditing and observability.
 
 ## Key Features
 
 - **Unified Interface**: OpenAI-compatible endpoints for seamless integration with existing tools and libraries
-- **Security First**: Built-in Filtration Gateway provides PII redaction, prompt injection protection, and content safety scanning
-- **Orchestration**: Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana)
-- **Observability**: Comprehensive logging and metrics via the Dashboard for full visibility into usage and performance
+- **Security First**: Built-in Guardrail Engine provides PII redaction, prompt injection protection, and content safety scanning
+- **Orchestration**: Intelligent routing and job management across diverse compute pools (Kubernetes, SkyPilot, Nosana, Akash)
+- **Observability**: Comprehensive logging, Prometheus-compatible metrics, and structured audit logging
+- **Multi-Provider**: Proxy requests to OpenAI, Anthropic, Gemini, Groq, Cerebras, Mistral, DeepSeek
+- **Inference Engines**: Supports vLLM, Ollama, TEI, Infinity, LocalAI, Inferia Diffusion
 
 ## System Components
 
-Inferia consists of three main modular gateways:
+InferiaLLM consists of six core services:
 
-1. **Inference Gateway**: The high-performance entry point for API requests
-2. **Filtration Gateway**: The security engine responsible for guardrails and policy enforcement
-3. **Orchestration Gateway**: The control plane that manages compute resources and model deployments
+1. **Inference Gateway**: Data-plane ingress for all LLM inference traffic (port 8001)
+2. **API Gateway**: Authentication, RBAC, policy enforcement, and quota management (port 8000)
+3. **Orchestration Gateway**: Compute control authority and execution routing (port 8080)
+4. **Guardrail Engine**: Content safety scanning, PII detection, and prompt injection protection (port 8002)
+5. **Data Engine**: Knowledge base management, document ingestion, and vector operations (port 8003)
+6. **Admin Dashboard**: Administrative control surface for policies, compute pools, usage, and audits (port 3001)
+
+## Technology Stack
+
+- **Language**: Python 3.10+
+- **API Framework**: FastAPI (Asynchronous, High-performance)
+- **Inter-Service Communication**: gRPC (Protobuf)
+- **Task Queue**: Redis Streams & Pub/Sub
+- **Primary Database**: PostgreSQL 15
+- **Cache & Broker**: Redis 7
+- **Vector Query**: pgvector / ChromaDB
+- **Authentication**: Stateless JWT (HS256)
+- **Encryption**: Fernet (Symmetric encryption for secrets)
+
+## Compute Providers
+
+- **Nosana** — decentralized GPU compute (DePIN)
+- **AWS** — EC2 GPU instances via SkyPilot
+- **GCP** — Compute Engine via SkyPilot
+- **Akash** — decentralized cloud (SDL-based)
+- **Kubernetes** — on-prem / managed clusters
 
 ## Documentation Sections
 
 - **Getting Started**: Quickstart guide and installation instructions
-- **Platform**: Architecture overview and core concepts
-- **Features**: Detailed feature documentation including API keys, billing, and model management
-- **Developer**: Developer guides, SDKs, and architecture details
+- **Platform**: Architecture overview, configuration, RBAC, and integrations
+- **Features**: Inference, guardrails, knowledge base, prompt templates, observability
+- **Developer**: Architecture, project structure, adapters, contributing
 - **API Reference**: Complete API documentation for all gateways
+- **SDK**: Python package CLI and OpenAI SDK integration
 
 ## Keywords
 
-AI inference, machine learning, LLM deployment, AI platform, MLOps, model serving, large language models, distributed computing, cloud AI, on-premise AI, DePIN, Kubernetes, OpenAI-compatible API, prompt injection protection, PII redaction, content safety, AI orchestration, model routing, compute management
+AI inference, machine learning, LLM deployment, AI platform, MLOps, model serving, large language models, distributed computing, cloud AI, on-premise AI, DePIN, Kubernetes, OpenAI-compatible API, prompt injection protection, PII redaction, content safety, AI orchestration, model routing, compute management, FastAPI, gRPC, PostgreSQL, Redis, vLLM, Ollama, guardrails, RBAC, JWT, self-hosted, provider-neutral
 
 ## Contact
 

@@ -1,5 +1,5 @@
 "use client";
-import { Cpu, Gpu, Group, Server, Shield, Terminal } from "lucide-react";
+import { Cpu, Gpu, Group, Server, Shield, Terminal, Layers } from "lucide-react";
 
 const WideDashedLineH = ({ className = "" }: { className?: string }) => (
   <div
@@ -46,7 +46,7 @@ const MODELS = [
   {
     name: "Mixtral-8x7b",
     src: "/mistral.svg",
-    provider: "Nosana (DePIN)",
+    provider: "Akash (DePIN)",
     status: "Scaling Up",
     vram: "24GB",
     tps: "---",
@@ -182,6 +182,10 @@ export default function ModelRuntimeSection() {
 
             <div className="mt-12 space-y-4">
               <div className="flex items-center gap-3 text-sm text-neutral-400">
+                <Layers className="w-4 h-4 text-neutral-600" />
+                <span>vLLM, Ollama, TEI, LocalAI engines</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Server className="w-4 h-4 text-neutral-600" />
                 <span>Zero-config Docker containers</span>
               </div>
@@ -191,15 +195,15 @@ export default function ModelRuntimeSection() {
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Gpu className="w-4 h-4 text-neutral-600" />
-                <span>On-prem GPU clusters</span>
+                <span>Nosana, Akash DePIN + on-prem clusters</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Group className="w-4 h-4 text-neutral-600" />
-                <span>Kubernetes-based inference</span>
+                <span>Kubernetes, SkyPilot scheduling</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-neutral-400">
                 <Shield className="w-4 h-4 text-neutral-600" />
-                <span>Isolated or sovereign environments</span>
+                <span>OpenAI, Anthropic, Gemini, Groq proxying</span>
               </div>
             </div>
           </div>

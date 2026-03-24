@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Shield } from "lucide-react";
+import { Shield, Container } from "lucide-react";
 
 const WideDashedLineV = ({ className = "" }: { className?: string }) => (
   <div
@@ -35,7 +35,8 @@ const Crosshair = ({ className = "" }: { className?: string }) => (
 
 const COMPANIES = [
   { name: "Nosana", src: "/nosana.svg", color: "#14F195" },
-  { name: "akash", src: "/akash.svg", color: "#FF414C" },
+  { name: "Akash", src: "/akash.svg", color: "#FF414C" },
+  { name: "Kubernetes", icon: Container, color: "#326CE5" },
   { name: "VPC", icon: Shield, color: "#3B82F6" },
   { name: "GCP", src: "/gcp.svg", color: "#10a37f" },
   { name: "Azure", src: "/azure.svg", color: "#0078D4" },

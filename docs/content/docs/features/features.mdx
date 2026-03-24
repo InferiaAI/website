@@ -39,7 +39,21 @@ response = client.chat.completions.create(
 | Kubernetes | On-Prem/Cloud | Standard GPU clusters |
 | SkyPilot | Multi-Cloud | AWS, GCP, Azure VMs |
 | Nosana | DePIN | Decentralized GPU network |
-| Akash | DePIN | Decentralized compute |
+| Akash | DePIN | Decentralized cloud (SDL-based) |
+
+### Inference Engines
+| Engine | Type |
+| --- | --- |
+| vLLM | High-throughput serving |
+| Ollama | Local inference |
+| TEI | Text Embeddings Inference |
+| Infinity | Embedding server |
+| LocalAI | OpenAI-compatible local |
+| Inferia Diffusion | Image generation |
+
+### External Provider Proxying
+Route requests to external providers through InferiaLLM for unified access control and auditing:
+- OpenAI, Anthropic, Gemini, Groq, Cerebras, Mistral, DeepSeek
 
 ### Deployment Management
 - Create, start, stop, terminate deployments
@@ -83,7 +97,7 @@ response = client.chat.completions.create(
 ## Knowledge Base (RAG)
 
 ### Document Management
-- Upload PDF, DOCX, TXT files
+- Upload PDF, DOCX, TXT, MD, CSV, JSON files (up to 50 MB)
 - Automatic chunking and embedding
 - ChromaDB vector storage
 
@@ -113,8 +127,10 @@ response = client.chat.completions.create(
 - Model and deployment metadata
 
 ### Audit Logs
-- All administrative actions
-- Security events
+- Categorized events: auth, security, deployment, api_key, organization, credential, configuration, knowledge_base
+- Actor identification with user email resolution
+- Organization-scoped logs for multi-tenant isolation
+- Category filtering via Dashboard UI
 - Immutable history
 
 ### Metrics

@@ -20,7 +20,7 @@ The easiest way to get started is by installing the `inferiallm` package.
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install inferiallm
+    pip install inferiallm==0.1.0b1
     ```
 
 2.  **Configure Environment**:
@@ -34,8 +34,7 @@ The easiest way to get started is by installing the `inferiallm` package.
     | Variable | Description |
     | --- | --- |
     | `DATABASE_URL` | PostgreSQL connection string (e.g., `postgresql://inferia:inferia@localhost:5432/inferia`) |
-    | `REDIS_HOST` | Redis host (default: `localhost`) |
-    | `REDIS_PORT` | Redis port (default: `6379`) |
+    | `REDIS_HOST` | Redis hostname (default: `localhost`) |
     | `JWT_SECRET_KEY` | Secret for signing access tokens (generate a long random string) |
     | `INTERNAL_API_KEY` | Secret for service-to-service authentication |
     | `SECRET_ENCRYPTION_KEY` | 32-byte base64 key for encrypting provider credentials |
@@ -61,8 +60,11 @@ The easiest way to get started is by installing the `inferiallm` package.
     | --- | --- |
     | Dashboard | http://localhost:3001 |
     | Orchestration API | http://localhost:8080 |
-    | Filtration Gateway | http://localhost:8000 |
+    | API Gateway | http://localhost:8000 |
     | Inference Gateway | http://localhost:8001 |
+    | Guardrail Engine | http://localhost:8002 |
+    | Data Engine | http://localhost:8003 |
+    | DePIN Sidecar | http://localhost:3000 |
 
 ## 2. Using Docker Compose
 
@@ -75,7 +77,7 @@ If you prefer containerization, use the `deploy` directory.
 
 1.  **Pull Docker Image**:
     ```bash
-    docker pull inferiaai/inferiallm:latest
+    docker pull inferiaai/inferiallm:v0.1.0-beta.1
     ```
 
 2.  **Configure Environment**:
@@ -92,14 +94,14 @@ If you prefer containerization, use the `deploy` directory.
     docker run -d \
       --name inferia-app \
       --env-file .env \
-      -p 8000:8000 -p 8001:8001 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
-      inferiaai/inferiallm:latest
+      -p 8000:8000 -p 8001:8001 -p 8002:8002 -p 8003:8003 -p 8080:8080 -p 3000:3000 -p 3001:3001 \
+      inferiaai/inferiallm:v0.1.0-beta.1
     ```
 
 4.  **Access Dashboard**:
     Open [http://localhost:3001](http://localhost:3001).
     
-    Default credentials: `admin@example.com` / `admin123`
+    Default credentials: Use the `SUPERADMIN_EMAIL` and `SUPERADMIN_PASSWORD` you set in your `.env` file.
 
 ### Docker Services
 
@@ -107,8 +109,10 @@ The unified Docker image starts these services:
 
 | Service | Port | Description |
 | --- | --- | --- |
-| Filtration Gateway | 8000 | Auth, RBAC, Guardrails |
+| API Gateway | 8000 | Authentication, RBAC, Policy Enforcement |
 | Inference Gateway | 8001 | OpenAI-compatible API |
+| Guardrail Engine | 8002 | Content Safety & PII Detection |
+| Data Engine | 8003 | Knowledge Base & Vector Operations |
 | Orchestration Gateway | 8080 | Compute & Deployment Management |
-| DePIN Sidecar | 3000 | Nosana/Blockchain interactions |
+| DePIN Sidecar | 3000 | Nosana/Akash interactions |
 | Dashboard | 3001 | Admin UI |
